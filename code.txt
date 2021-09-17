@@ -25,9 +25,9 @@ const char* functionTimeTestFileName = "function_times.csv";
 //size - размер области памяти
 template <typename arrType>
 void generateIncreaseSequence(arrType* arr,
-    int size,
-    int top = 10,
-    int bottom = 0) {
+                                int size,
+                                int top = 10,
+                                int bottom = 0) {
     double diff = ((double)top - (double)bottom) / (double)size;
     for (int i = 0; i < size; i++) {
         arr[i] = (arrType)(i * diff);
@@ -39,9 +39,9 @@ void generateIncreaseSequence(arrType* arr,
 //size - размер области памяти
 template <typename arrType>
 void generateDecreaseSequence(arrType* arr,
-    int size,
-    int top = 10,
-    int bottom = 0) {
+                                int size,
+                                int top = 10,
+                                int bottom = 0) {
     double diff = ((double)top - (double)bottom) / (double)size;
     for (int i = size - 1; i >= 0; i--) {
         arr[i] = (arrType)((size - i - 1) * diff);
@@ -53,9 +53,9 @@ void generateDecreaseSequence(arrType* arr,
 //size - размер области памяти
 template <typename arrType>
 void generateRandomSequence(arrType* arr,
-    int size,
-    int top = 10,
-    int bottom = 0) {
+                            int size,
+                            int top = 10,
+                            int bottom = 0) {
     int range = top - bottom;
     for (int i = 0; i < size; i++)
         arr[i] = (arrType)(rand() % range + bottom);
@@ -66,9 +66,9 @@ void generateRandomSequence(arrType* arr,
 //size - размер области памяти
 template <typename arrType>
 void generateSawSequence(arrType* arr,
-    int size,
-    int top = 10,
-    int bottom = 0) {
+                        int size,
+                        int top = 10,
+                        int bottom = 0) {
     int range = top - bottom;
     for (int i = 0; i < size; i++) {
         arr[i] = (arrType)(i % range + bottom);
@@ -80,9 +80,9 @@ void generateSawSequence(arrType* arr,
 //size - размер области памяти
 template <typename arrType>
 void generateSinSequence(arrType* arr,
-    int size,
-    int top = 10,
-    int bottom = 0) {
+                        int size,
+                        int top = 10,
+                        int bottom = 0) {
     int stepCount = 20;
     float stepSize = 6.28 / stepCount;
     int halfRange = (top - bottom) / 2;
@@ -106,10 +106,10 @@ void generateSinSequence(arrType* arr,
 //за которое сгенерировалась последовательность
 template <typename arrType>
 long long testFunction(void (*func)(arrType*, int, int, int),
-    int sequenceSize = 200,
-    int top = 10,
-    int bottom = 0,
-    bool print = false ) {
+                                int sequenceSize = 200,
+                                int top = 10,
+                                int bottom = 0,
+                                bool print = false ) {
     //Выделяем память
     arrType* arr = new arrType[sequenceSize];
 
@@ -182,7 +182,7 @@ int main() {
     std::cout << "===================== Int Funcs =====================" << std::endl;
 
     std::ofstream ofs(functionTimeTestFileName, std::ofstream::out | std::ofstream::app);
-    ofs << "function;" << "time;" << "argcount;" << '\n';
+    ofs << "function;" << "argcount;" << "time;" << '\n';
 
     for (int i = 0; i < functionCount; i++) {
 
@@ -196,7 +196,7 @@ int main() {
                       << std::endl;
     
             //Вывод тела таблцы
-            ofs  << i << ';' << time << ';' << j * functionExp << ";\n";
+            ofs  << i << ';' << j * functionExp << ';' << time << ";\n";
         }
     }
 
