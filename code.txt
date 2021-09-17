@@ -102,7 +102,7 @@ void generateSinSequence(arrType* arr,
 //Возвращает количество наносекунд, 
 //за которое сгенерировалась последовательность
 template <typename arrType>
-unsigned int testFunction(void (*func)(arrType*, int, int, int),
+long long testFunction(void (*func)(arrType*, int, int, int),
     int sequenceSize = 200,
     int top = 10,
     int bottom = 0,
