@@ -1,0 +1,131 @@
+#include <iostream>
+#include <ctime>
+#include <fstream>
+#include <chrono>
+#include <iomanip>
+
+//Формирует возрастающую последовательность чисел
+//arr - указатель на область памяти, выделенной под массив
+//size - размер области памяти
+template <typename arrType>
+void generateIncreaseSequence(arrType* arr, int size) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = (arrType)i;
+    }
+        
+}
+
+//Формирует убывающую последовательность чисел
+//arr - указатель на область памяти, выделенной под массив
+//size - размер области памяти
+template <typename arrType>
+void generateDecreaseSequence(arrType* arr, int size) {
+    for (int i = 0; i < size; i++)
+        arr[i] = (arrType)(size - i - 1);
+}
+
+//Формирует случайную последовательность чисел
+//arr - указатель на область памяти, выделенной под массив
+//size - размер области памяти
+template <typename arrType>
+void generateRandomSequence(arrType* arr, int size) {
+    for (int i = 0; i < size; i++)
+        arr[i] = (arrType)rand();
+}
+
+//Формирует пилообразную последовательность чисел
+//arr - указатель на область памяти, выделенной под массив
+//size - размер области памяти
+template <typename arrType>
+void generateSawSequence(arrType* arr, int size) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = (arrType)(i % 10);
+    }
+};
+
+//Формирует синусообразную последовательность чисел
+//arr - указатель на область памяти, выделенной под массив
+//size - размер области памяти
+template <typename arrType>
+void generateSinSequence(arrType* arr, int size) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = (arrType)(sin(i*0.314));
+    }
+};
+
+//Тестирует набор функций на предмет скорости исполнения. Может вывести результат работы функций в файл
+//func - функция для тестирования
+//sequenceSize - рамзер генерируемой последовательности
+//print - булевый флаг печати
+//Возвращает количество наносекунд, за которое сгенерировалась последовательность
+template <typename arrType>
+unsigned int testFunction(void (*func)(arrType*, int), int sequenceSize = 200, bool print = false) {
+    //Выделяем память
+    arrType* arr = new arrType[sequenceSize];
+
+    auto beginTime = std::chrono::steady_clock::now();
+    func(arr, sequenceSize);
+    auto endTime = std::chrono::steady_clock::now();
+    auto elapsedMs = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - beginTime).count();
+
+    //Нужно ли печатать?
+    if (print) {
+         std::ofstream ofs("test.csv", std::ofstream::out | std::ofstream::app);
+
+         for (int j = 0; j < sequenceSize; j++) {
+             ofs << arr[j] << ';';
+         }
+         ofs << '\n';
+
+         ofs.close();
+    }
+
+    //Очищаем память
+    delete[] arr;
+
+    return elapsedMs;
+}
+
+int main()
+{
+    const int functionCount = 5; //Кол-во функций
+
+    //Инициализация рандомизатора
+    srand(time(NULL));
+
+    //Функции с типом int
+    void (*testFunctionsInt[])(int*, int) = { 
+        generateIncreaseSequence, 
+        generateDecreaseSequence,
+        generateRandomSequence, 
+        generateSawSequence,
+        generateSinSequence
+
+    };
+
+    //Функции с типом float
+    void (*testFunctionsDouble[])(float*, int) = {
+        generateIncreaseSequence,
+        generateDecreaseSequence,
+        generateRandomSequence,
+        generateSawSequence,
+        generateSinSequence,
+    };
+
+    std::cout << "Generation of function graphics..." << std::endl;
+    for (int i = 0; i < functionCount; i++) {
+        testFunction(testFunctionsDouble[i], 100, true);
+    }
+    
+
+    std::cout << "Testing functions time..." << std::endl;
+    for (int i = 0; i < functionCount; i++) {
+        for (int j = 1; j < 11; j++) {
+            unsigned int time = testFunction(testFunctionsInt[i], j * 500000);
+            std::cout << "Function: " << i << " ArgCount:" << std::setw(10) << j * 500000 << " Time: " << std::setw(10) << time << std::endl;
+        }
+    }
+
+    
+    
+}
