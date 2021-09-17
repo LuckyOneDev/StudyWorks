@@ -17,6 +17,9 @@
 #include <chrono>
 #include <iomanip>
 
+const char* functionValueTestFileName = "function_values.csv";
+const char* functionTimeTestFileName = "function_times.csv";
+
 //Формирует возрастающую последовательность чисел
 //arr - указатель на область памяти, выделенной под массив
 //size - размер области памяти
@@ -118,14 +121,12 @@ long long testFunction(void (*func)(arrType*, int, int, int),
 
     //Нужно ли печатать?
     if (print) {
-        // Печать в файл .csv для удобства импортирования в Excel
-        std::ofstream ofs("test.csv", std::ofstream::out | std::ofstream::app);
 
         // Устанавливаем десятичный разделитель на ','
         std::locale::global(std::locale(""));
 
-        ofs << "sequenceSize: " << sequenceSize << ';';
-        ofs << "elapsedMs: " << elapsedMs << ';';
+        // Печать в файл .csv для удобства импортирования в Excel
+        std::ofstream ofs(functionValueTestFileName, std::ofstream::out | std::ofstream::app);
 
         for (int i = 0; i < sequenceSize; i++) {
             ofs << arr[i] << ';';
@@ -133,6 +134,9 @@ long long testFunction(void (*func)(arrType*, int, int, int),
         ofs << '\n';
 
         ofs.close();
+
+        // Сбрасываем настройки вывода
+        std::locale::global(std::locale("C"));
     }
 
     //Очищаем память
@@ -143,6 +147,7 @@ long long testFunction(void (*func)(arrType*, int, int, int),
 
 int main() {
     const int functionCount = 5; //Кол-во функций
+    const int functionExp = 500000; //коэффицент возрастания размера рядов для теста
 
     //Инициализация рандомизатора
     srand(time(NULL));
@@ -172,18 +177,26 @@ int main() {
         testFunction(testFunctionsFloat[i], 100, 10, 0, true);
     }
 
-
     //Тестирование времени создания больших последовательностей
     std::cout << "Testing functions' time..." << std::endl;
-    std::cout << "===================== Int Funcs ====================="
-        << std::endl;
+    std::cout << "===================== Int Funcs =====================" << std::endl;
+
+    std::ofstream ofs(functionTimeTestFileName, std::ofstream::out | std::ofstream::app);
+    ofs << "function;" << "time;" << "argcount;" << '\n';
+
     for (int i = 0; i < functionCount; i++) {
+
         for (int j = 1; j < 11; j++) {
-            unsigned int time = testFunction(testFunctionsInt[i], j * 500000);
+            unsigned int time = testFunction(testFunctionsInt[i], j * functionExp);
+           
+            //Вывод шапки
             std::cout << "Function: " << i
-                << " ArgCount:" << std::setw(10) << j * 500000
-                << " Time: " << std::setw(10) << time
-                << std::endl;
+                      << " ArgCount:" << std::setw(10) << j * functionExp
+                      << " Time: " << std::setw(10) << time
+                      << std::endl;
+    
+            //Вывод тела таблцы
+            ofs  << i << ';' << time << ';' << j * functionExp << ";\n";
         }
     }
 
@@ -192,9 +205,9 @@ int main() {
 
     for (int i = 0; i < functionCount; i++) {
         for (int j = 1; j < 11; j++) {
-            unsigned int time = testFunction(testFunctionsFloat[i], j * 500000);
+            unsigned int time = testFunction(testFunctionsFloat[i], j * functionExp);
             std::cout << "Function: " << i
-                << " ArgCount:" << std::setw(10) << j * 500000
+                << " ArgCount:" << std::setw(10) << j * functionExp
                 << " Time: " << std::setw(10) << time
                 << std::endl;
         }
