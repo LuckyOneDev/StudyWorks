@@ -1,0 +1,154 @@
+/******************************************************************************
+*                              Курс информатики                               *
+*******************************************************************************
+* Project Type  : Win32 Console Application                                   *
+* Project Name  : Generation of various sequences                             *
+* File Name     : K2L2.cpp                                                    *
+* Language      : c++, MSVS ver 2015 and above                                *
+* Programmers   : Парфенюк Дмитрий Александрович, Мокшин Иван Николаевич      *
+* Modified by   :                                                             *
+* Created       : 19.09.2021                                                  *
+* Last Revision :                                                             *
+******************************************************************************/
+
+#include <iostream>
+#include <ctime>
+#include <fstream>
+#include <chrono>
+#include <iomanip>
+
+int Better_Linear_Search(int* arr, int arrSize, int key, int& compareCount) {
+    
+    compareCount = 0;
+
+    for (int i = 0; i < arrSize; i++)
+    {
+        compareCount++; //i < arrSize
+        compareCount++; //arr[i] == key
+
+        if (arr[i] == key) {
+            return i;
+        }
+            
+    }
+    return -1;
+
+}
+
+int Sentinel_Linear_Search(int* arr, int arrSize, int key, int& compareCount) {
+    int last = arr[arrSize - 1];
+    arr[arrSize - 1] = key;
+    int i = 0;
+
+    while (arr[i] != key) {
+        compareCount++; //arr[i] != key
+        i++;
+    }
+        
+    arr[arrSize - 1] = last;
+
+    compareCount++; //(i < arrSize - 1) || (arr[arrSize - 1] == key)
+    if ((i < arrSize - 1) || (arr[arrSize - 1] == key))
+        return i;
+    else
+        return -1;
+}
+
+int Sorted_Linear_Search() {
+    return 0;
+}
+
+int Binary_Search(int *a, int first, int last, int key, int& compareCount) {
+    int middle;
+    compareCount++; //last >= first
+    if (last >= first)
+    {
+        middle = (first + last) / 2;
+        //Checking if the element is present at middle loc
+        compareCount++; //a[middle] == key
+        if (a[middle] == key)
+        {
+            return middle + 1;
+        }
+
+        //Checking if the search element is present in greater half
+        else {
+            compareCount++; //a[middle] < key
+
+            if (a[middle] < key)
+            {
+                return Binary_Search(a, middle + 1, last, key, compareCount);
+            }        
+            //Checking if the search element is present in lower half
+            else
+            {
+                return Binary_Search(a, first, middle - 1, key, compareCount);
+            }
+        }
+
+
+    }
+    return -1;
+
+}
+
+//Генерирует случайную возрастающую последовательность
+//size - размер нужного массива
+//Возвращает arr - указатель на массив
+int* generateIncreaseSequence(int size) {
+    int* arr = new int[size]; //Выделение памяти
+    int step = 5; // Вычисление шага
+    for (int i = 0; i < size; i++) 
+        arr[i] = i * step + rand() % step;  //Заполнение массива
+    return arr;
+}
+
+//Генерирует случайную последовательность от 0 до INT_MAX
+//size - размер нужного массива
+//Возвращает arr - указатель на массив
+int* generateRandomSequence(int size) {
+    int* arr = new int[size]; //Выделение памяти
+    for (int i = 0; i < size; i++)
+       arr[i] = rand();  //Заполнение массива
+    return arr;
+}
+
+//Заменяет все значения value в массиве на value - 1. Затем вставляет value в случайное место
+//arr - указатель на массив
+//arrSize - размер массива
+//value - значение для вставки
+//Возвращает position - индекс массива, куда был вставлен элемент
+int prepareArray(int* arr, int arrSize, int value) {
+
+    for (int i = 0; i < arrSize; i++)
+        if (arr[i] == value) arr[i]--;
+
+    int position = rand() % arrSize; //Генерация случайной позиции в массиве
+    arr[position] = value;
+    return position;
+}
+
+template<typename retType, typename... parameterPack>
+long long timeTest(retType (*func)(parameterPack ...args), int* arr, int arrSize, int key) {
+
+    //Замеряем время выполнения
+    auto beginTime = std::chrono::steady_clock::now();
+    func(arr, arrSize, key);
+    auto endTime = std::chrono::steady_clock::now();
+
+    auto elapsedMs = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
+
+    return elapsedMs;
+}
+
+int main() {
+    //Инициализация рандомизатора
+    srand(time(NULL));
+
+    int* increaseSequence = generateIncreaseSequence(30);
+    int* randomSequence = generateRandomSequence(30);
+
+    //timeTest(Binary_Search, increaseSequence, 30, 5);
+
+}
+/**********************************END-OF-K2L2.CPP******************************/
