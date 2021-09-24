@@ -54,8 +54,19 @@ int Sentinel_Linear_Search(int* arr, int arrSize, int key, int& compareCount) {
         return -1;
 }
 
-int Sorted_Linear_Search() {
-    return 0;
+int Sequential_Linear_Search(int* arr, int arrSize, int key, int& compareCount) {
+    int i = 1;
+    while (key > arr[i]) {
+        i++;
+        compareCount++;
+    }
+    
+    compareCount++;
+    if (key == arr[i])
+    {
+        return i;
+    }
+    return -1;
 }
 
 int Binary_Search(int *a, int first, int last, int key, int& compareCount) {
@@ -84,7 +95,7 @@ int Binary_Search(int *a, int first, int last, int key, int& compareCount) {
             {
                 return Binary_Search(a, first, middle - 1, key, compareCount);
             }
-        }
+        }      
 
 
     }
@@ -92,6 +103,29 @@ int Binary_Search(int *a, int first, int last, int key, int& compareCount) {
 
 }
 
+int Lecture_Binary_search (int* arr, int arrSize, int key,  int& compareCount) {
+        // Lecture realization
+    int lo = 0;
+    int hi = arrSize - 1;
+    int mi;
+    while (lo < hi)
+    {
+        mi = (lo + hi) / 2;
+        compareCount += 2; //both while and if
+        if (arr[mi] == key) {
+            return mi;
+        }
+
+        compareCount++;
+        if (arr[mi] < key) {
+            lo = mi + 1;
+        }
+        else {
+            hi = mi - 1;
+        }
+    }
+}
+    
 //Генерирует случайную возрастающую последовательность
 //size - размер нужного массива
 //Возвращает arr - указатель на массив
