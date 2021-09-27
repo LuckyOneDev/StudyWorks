@@ -196,8 +196,8 @@ int* generateRandomSequence(int size) {
     return arr;
 }
 
-int randintinrng(int min, int max) {
-    return min + (rand() % static_cast<int>(max - min + 1));
+inline int randintinrng(int min, int max) {
+    return min + (rand() % max - min + 1);
 }
 
 int main() {
