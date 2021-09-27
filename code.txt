@@ -3,12 +3,12 @@
 *******************************************************************************
 * Project Type  : Win32 Console Application                                   *
 * Project Name  : Generation of various sequences                             *
-* File Name     : LR1.cpp                                                     *
+* File Name     : K2L2.cpp                                                    *
 * Language      : c++, MSVS ver 2015 and above                                *
 * Programmers   : Парфенюк Дмитрий Александрович, Мокшин Иван Николаевич      *
 * Modified by   :                                                             *
-* Created       : 7.09.2021                                                   *
-* Last Revision : 17.09.2021                                                  *
+* Created       : 19.09.2021                                                  *
+* Last Revision :                                                             *
 ******************************************************************************/
 
 #include <iostream>
@@ -17,200 +17,300 @@
 #include <chrono>
 #include <iomanip>
 
-const char* functionValueTestFileName = "function_values.csv";
-const char* functionTimeTestFileName = "function_times.csv";
+int Better_Linear_Search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
 
-//Формирует возрастающую последовательность чисел
-//arr - указатель на область памяти, выделенной под массив
-//size - размер области памяти
-template <typename arrType>
-void generateIncreaseSequence(arrType* arr,
-                                int size,
-                                int top = 10,
-                                int bottom = 0) {
-    double diff = ((double)top - (double)bottom) / (double)size;
-    for (int i = 0; i < size; i++) {
-        arr[i] = (arrType)(i * diff);
+    if (compareTest) {
+        *compareCount = 0;
+
+        (*compareCount)++; //i < arrSiz
+        for (int i = 0; i < arrSize; i++)
+        {
+            (*compareCount)++; //i < arrSize
+
+            (*compareCount)++; //arr[i] == key
+            if (arr[i] == key) {
+                return i;
+            }
+
+        }
+        return -1;
+    }
+    else {
+        for (int i = 0; i < arrSize; i++)
+        {
+            if (arr[i] == key) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
 
-//Формирует убывающую последовательность чисел
-//arr - указатель на область памяти, выделенной под массив
-//size - размер области памяти
-template <typename arrType>
-void generateDecreaseSequence(arrType* arr,
-                                int size,
-                                int top = 10,
-                                int bottom = 0) {
-    double diff = ((double)top - (double)bottom) / (double)size;
-    for (int i = size - 1; i >= 0; i--) {
-        arr[i] = (arrType)((size - i - 1) * diff);
+int Sentinel_Linear_Search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
+    
+    if (compareTest) {
+        *compareCount = 0;
+
+        int last = arr[arrSize - 1];
+        arr[arrSize - 1] = key;
+        int i = 0;
+
+        (*compareCount)++; //arr[i] != key
+        while (arr[i] != key) {
+            (*compareCount)++; //arr[i] != key
+            i++;
+        }
+
+        arr[arrSize - 1] = last;
+
+        (*compareCount)++; //(i < arrSize - 1) || (arr[arrSize - 1] == key)
+        if ((i < arrSize - 1) || (arr[arrSize - 1] == key))
+            return i;
+        else
+            return -1;
     }
+    else {
+        int last = arr[arrSize - 1];
+        arr[arrSize - 1] = key;
+        int i = 0;
+
+        while (arr[i] != key) {
+            i++;
+        }
+
+        arr[arrSize - 1] = last;
+
+        if ((i < arrSize - 1) || (arr[arrSize - 1] == key))
+            return i;
+        else
+            return -1;
+    }
+
 }
 
-//Формирует случайную последовательность чисел
-//arr - указатель на область памяти, выделенной под массив
-//size - размер области памяти
-template <typename arrType>
-void generateRandomSequence(arrType* arr,
-                            int size,
-                            int top = 10,
-                            int bottom = 0) {
-    int range = top - bottom;
+int Sequential_Linear_Search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
+    
+    if (compareTest) {
+        (*compareCount) = 0;
+
+        int i = 1;
+        (*compareCount)++; //key > arr[i]
+        while (key > arr[i]) {
+            i++;
+            (*compareCount)++; //key > arr[i]
+        }
+
+        (*compareCount)++;
+        if (key == arr[i])
+        {
+            return i;
+        }
+        return -1;
+    }
+    else {
+        int i = 1;
+        while (key > arr[i]) {
+            i++;
+        }
+
+        if (key == arr[i])
+        {
+            return i;
+        }
+        return -1;
+    }
+    
+}
+
+int Binary_search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
+    
+    if (compareTest) {
+        *compareCount = 0;
+
+        // Lecture realization
+        int lo = 0;
+        int hi = arrSize - 1;
+        int mi;
+        (*compareCount)++;  //lo < hi
+        while (lo <= hi)
+        {
+            (*compareCount)++; //lo < hi
+
+            mi = (lo + hi) / 2;
+            (*compareCount)++;; //arr[mi] == key
+            if (arr[mi] == key) {
+                return mi;
+            }
+
+            (*compareCount)++;
+            if (arr[mi] < key) {
+                lo = mi + 1;
+            }
+            else {
+                hi = mi - 1;
+            }
+        }
+        return -1;
+    }
+    else {
+        // Lecture realization
+        int lo = 0;
+        int hi = arrSize - 1;
+        int mi;
+        while (lo <= hi)
+        {
+            mi = (lo + hi) / 2;
+            if (arr[mi] == key) {
+                return mi;
+            }
+
+            if (arr[mi] < key) {
+                lo = mi + 1;
+            }
+            else {
+                hi = mi - 1;
+            }
+        }
+        return -1;
+    }
+   
+}
+
+//Генерирует случайную возрастающую последовательность
+//size - размер нужного массива
+//Возвращает arr - указатель на массив
+int* generateIncreaseSequence(int size) {
+    int* arr = new int[size]; //Выделение памяти
+    int step = INT_MAX / size; // Вычисление шага
     for (int i = 0; i < size; i++)
-        arr[i] = (arrType)(rand() % range + bottom);
+        arr[i] = i * step + rand() % step;  //Заполнение массива
+    return arr;
 }
 
-//Формирует пилообразную последовательность чисел
-//arr - указатель на область памяти, выделенной под массив
-//size - размер области памяти
-template <typename arrType>
-void generateSawSequence(arrType* arr,
-                        int size,
-                        int top = 10,
-                        int bottom = 0) {
-    int range = top - bottom;
-    for (int i = 0; i < size; i++) {
-        arr[i] = (arrType)(i % range + bottom);
-    }
-};
+//Генерирует случайную последовательность от 0 до INT_MAX
+//size - размер нужного массива
+//Возвращает arr - указатель на массив
+int* generateRandomSequence(int size) {
+    int* arr = new int[size]; //Выделение памяти
+    for (int i = 0; i < size; i++)
+        arr[i] = rand();  //Заполнение массива
+    return arr;
+}
 
-//Формирует синусообразную последовательность чисел
-//arr - указатель на область памяти, выделенной под массив
-//size - размер области памяти
-template <typename arrType>
-void generateSinSequence(arrType* arr,
-                        int size,
-                        int top = 10,
-                        int bottom = 0) {
-    int stepCount = 20;
-    float stepSize = 6.28 / stepCount;
-    int halfRange = (top - bottom) / 2;
-    int primalSinSize = size < stepCount ? size : stepCount;
+//Генерирует целое число x, min <= x <= max
+int RandomIntInRange(int min, int max) {
+    return min + (rand() % static_cast<int>(max - min + 1));
+}
 
-    for (int i = 0; i < primalSinSize; i++) {
-        arr[i] = (arrType)(sin(i * stepSize) * halfRange + bottom + halfRange);
-    }
-
-    for (int i = primalSinSize; i < size; i++) {
-        arr[i] = arr[i % stepCount];
-    }
-};
-
-//Тестирует набор функций на предмет скорости исполнения. 
-//Может вывести результат работы функций в файл
-//func - функция для тестирования
-//sequenceSize - рамзер генерируемой последовательности
-//print - булевый флаг печати
-//Возвращает количество наносекунд, 
-//за которое сгенерировалась последовательность
-template <typename arrType>
-long long testFunction(void (*func)(arrType*, int, int, int),
-                                int sequenceSize = 200,
-                                int top = 10,
-                                int bottom = 0,
-                                bool print = false ) {
-    //Выделяем память
-    arrType* arr = new arrType[sequenceSize];
-
-    //Замеряем время выполнения
+long long timeTest(int (*function)(int*, int, int, int*, bool), int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false){
     auto beginTime = std::chrono::steady_clock::now();
-    func(arr, sequenceSize, top, bottom);
+    int result = function(arr, arrSize, key, compareCount, compareTest);
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedMs = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
-
-    //Нужно ли печатать?
-    if (print) {
-
-        // Устанавливаем десятичный разделитель на ','
-        std::locale::global(std::locale(""));
-
-        // Печать в файл .csv для удобства импортирования в Excel
-        std::ofstream ofs(functionValueTestFileName, std::ofstream::out | std::ofstream::app);
-
-        for (int i = 0; i < sequenceSize; i++) {
-            ofs << arr[i] << ';';
-        }
-        ofs << '\n';
-
-        ofs.close();
-
-        // Сбрасываем настройки вывода
-        std::locale::global(std::locale("C"));
-    }
-
-    //Очищаем память
-    delete[] arr;
-
     return elapsedMs;
 }
-
 int main() {
-    const int functionCount = 5; //Кол-во функций
-    const int functionExp = 500000; //коэффицент возрастания размера рядов для теста
-
     //Инициализация рандомизатора
     srand(time(NULL));
 
-    //Функции с типом int
-    void (*testFunctionsInt[])(int*, int, int, int) = {
-        generateIncreaseSequence,
-        generateDecreaseSequence,
-        generateRandomSequence,
-        generateSawSequence,
-        generateSinSequence
+    int* increaseSequence = generateIncreaseSequence(30);
+    int* randomSequence = generateRandomSequence(30);
 
+
+    //Тестирование функций на работоспособность
+    const int fcount = 4;
+    const char** fnames = new const char*[4]{ 
+        "Better_Linear_Search\0", 
+        "Sentinel_Linear_Search\0", 
+        "Sequential_Linear_Search\0", 
+        "Binary_search\0"
+    };
+    int (*funcs[])(int*, int, int, int*, bool) = {
+        Better_Linear_Search,
+        Sentinel_Linear_Search,
+        Sequential_Linear_Search,
+        Binary_search
     };
 
-    //Функции с типом float
-    void (*testFunctionsFloat[])(float*, int, int, int) = {
-        generateIncreaseSequence,
-        generateDecreaseSequence,
-        generateRandomSequence,
-        generateSawSequence,
-        generateSinSequence,
-    };
+    int index = RandomIntInRange(0, 30);
 
-    //Создание небольших последовательностей для построения графиков
-    std::cout << "Generation of function graphics..." << std::endl;
-    for (int i = 0; i < functionCount; i++) {
-        testFunction(testFunctionsFloat[i], 100, 10, 0, true);
+    std::cout << "Index: " << index << std::endl;
+    for (int i = 0; i < 2; i++)
+    {
+        int comparecount = 0;
+        int found = funcs[i](randomSequence, 30, randomSequence[index], &comparecount, true);
+        std::cout << fnames[i] << ": ";
+        if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
+        std::cout << "Comparecount: " << comparecount;
+        std::cout << std::endl;
     }
 
-    //Тестирование времени создания больших последовательностей
-    std::cout << "Testing functions' time..." << std::endl;
-    std::cout << "===================== Int Funcs =====================" << std::endl;
-
-    std::ofstream ofs(functionTimeTestFileName, std::ofstream::out | std::ofstream::app);
-    ofs << "function;" << "argcount;" << "time;" << '\n';
-
-    for (int i = 0; i < functionCount; i++) {
-
-        for (int j = 1; j < 11; j++) {
-            unsigned int time = testFunction(testFunctionsInt[i], j * functionExp);
-           
-            //Вывод шапки
-            std::cout << "Function: " << i
-                      << " ArgCount:" << std::setw(10) << j * functionExp
-                      << " Time: " << std::setw(10) << time
-                      << std::endl;
-    
-            //Вывод тела таблцы
-            ofs  << i << ';' << j * functionExp << ';' << time << ";\n";
-        }
+    for (int i = 2; i < fcount; i++)
+    {
+        int comparecount = 0;
+        int found = funcs[i](increaseSequence, 30, increaseSequence[index], &comparecount, true);
+        std::cout << std::setw(10) << fnames[i] << ": ";
+        if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
+        std::cout << "Comparecount: " << comparecount;
+        std::cout << std::endl;
     }
 
-    std::cout << "===================== Float Funcs ====================="
-        << std::endl;
+    const int bigsize = 500000;
 
-    for (int i = 0; i < functionCount; i++) {
-        for (int j = 1; j < 11; j++) {
-            unsigned int time = testFunction(testFunctionsFloat[i], j * functionExp);
-            std::cout << "Function: " << i
-                << " ArgCount:" << std::setw(10) << j * functionExp
-                << " Time: " << std::setw(10) << time
-                << std::endl;
+    int* BigRandomSequence = generateRandomSequence(bigsize);
+    int* BigIncreaseSequence = generateIncreaseSequence(bigsize);
+
+    std::cout << "Sequences generated" << std::endl;
+
+    //Тесты
+    const int testCount = 1000;
+    int* testSet = new int[testCount];
+
+    std::ofstream found_file("test_found.csv", std::ofstream::out | std::ofstream::app);
+    std::ofstream not_found_file("test_not_found.csv", std::ofstream::out | std::ofstream::app);
+
+    //Формирование тестового набора и подготовка файлов. В наборе точно не будет INT_MAX
+    for (int i = 0; i < testCount; i++)
+        testSet[i] = RandomIntInRange(0, bigsize);
+
+    for (int i = 0; i < fcount; i++)
+        found_file << fnames[i] << ';';
+    found_file << '\n';
+
+    //Тесты найдено.
+    for (int i = 0; i < testCount; i++)
+    {
+
+        for (int j = 0; j < 2; j++) {
+            found_file << timeTest(funcs[j], BigRandomSequence, bigsize, BigRandomSequence[testSet[i]]) << ';';
         }
+
+        for (int j = 0; j < 2; j++) {
+            found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, BigIncreaseSequence[testSet[i]]) << ';';
+        }
+
+        found_file << '\n';
+
+    }
+
+    for (int i = 0; i < fcount; i++)
+        not_found_file << fnames[i] << ';';
+    not_found_file << '\n';
+
+    //Тесты не найдено.
+    for (int i = 0; i < testCount; i++)
+    {
+
+        for (int j = 0; j < 2; j++) {
+            not_found_file << timeTest(funcs[j], BigRandomSequence, bigsize, INT_MAX) << ';';
+        }
+
+        for (int j = 0; j < 2; j++) {
+            not_found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, INT_MAX) << ';';
+        }
+
+        not_found_file << '\n';
+
     }
 }
-/**********************************END-OF-LR1.CPP******************************/
+/**********************************END-OF-K2L2.CPP******************************/
