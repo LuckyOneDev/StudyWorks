@@ -19,317 +19,306 @@
 
 int Better_Linear_Search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
 
-    if (compareTest) {
-        *compareCount = 0;
+  if (compareTest) {
+    *compareCount = 0;
 
-        (*compareCount)++; //i < arrSiz
-        for (int i = 0; i < arrSize; i++)
-        {
-            (*compareCount)++; //i < arrSize
+    (*compareCount)++; //i < arrSiz
+    for (int i = 0; i < arrSize; i++) {
+      (*compareCount)++; //i < arrSize
 
-            (*compareCount)++; //arr[i] == key
-            if (arr[i] == key) {
-                return i;
-            }
+      (*compareCount)++; //arr[i] == key
+      if (arr[i] == key) {
+        return i;
+      }
 
-        }
-        return -1;
     }
-    else {
-        for (int i = 0; i < arrSize; i++)
-        {
-            if (arr[i] == key) {
-                return i;
-            }
-        }
-        return -1;
+    return -1;
+  } else {
+    for (int i = 0; i < arrSize; i++) {
+      if (arr[i] == key) {
+        return i;
+      }
     }
+    return -1;
+  }
 }
 
 int Sentinel_Linear_Search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
-    
-    if (compareTest) {
-        *compareCount = 0;
 
-        int last = arr[arrSize - 1];
-        arr[arrSize - 1] = key;
-        int i = 0;
+  if (compareTest) {
+    *compareCount = 0;
 
-        (*compareCount)++; //arr[i] != key
-        while (arr[i] != key) {
-            (*compareCount)++; //arr[i] != key
-            i++;
-        }
+    int last = arr[arrSize - 1];
+    arr[arrSize - 1] = key;
+    int i = 0;
 
-        arr[arrSize - 1] = last;
-
-        (*compareCount)++; //(i < arrSize - 1) || (arr[arrSize - 1] == key)
-        if ((i < arrSize - 1) || (arr[arrSize - 1] == key))
-            return i;
-        else
-            return -1;
+    (*compareCount)++; //arr[i] != key
+    while (arr[i] != key) {
+      (*compareCount)++; //arr[i] != key
+      i++;
     }
-    else {
-        int last = arr[arrSize - 1];
-        arr[arrSize - 1] = key;
-        int i = 0;
 
-        while (arr[i] != key) {
-            i++;
-        }
+    arr[arrSize - 1] = last;
 
-        arr[arrSize - 1] = last;
+    (*compareCount)++; //(i < arrSize - 1) || (arr[arrSize - 1] == key)
+    if ((i < arrSize - 1) || (arr[arrSize - 1] == key))
+      return i;
+    else
+      return -1;
+  } else {
+    int last = arr[arrSize - 1];
+    arr[arrSize - 1] = key;
+    int i = 0;
 
-        if ((i < arrSize - 1) || (arr[arrSize - 1] == key))
-            return i;
-        else
-            return -1;
+    while (arr[i] != key) {
+      i++;
     }
+
+    arr[arrSize - 1] = last;
+
+    if ((i < arrSize - 1) || (arr[arrSize - 1] == key))
+      return i;
+    else
+      return -1;
+  }
 
 }
 
 int Sequential_Linear_Search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
-    
-    if (compareTest) {
-        (*compareCount) = 0;
 
-        int i = 1;
-        (*compareCount)++; //key > arr[i]
-        while (key > arr[i]) {
-            i++;
-            (*compareCount)++; //key > arr[i]
-        }
+  if (compareTest) {
+    (*compareCount) = 0;
 
-        (*compareCount)++;
-        if (key == arr[i])
-        {
-            return i;
-        }
-        return -1;
+    int i = 1;
+    (*compareCount)++; //key > arr[i]
+    while (key > arr[i]) {
+      i++;
+      (*compareCount)++; //key > arr[i]
     }
-    else {
-        int i = 1;
-        while (key > arr[i]) {
-            i++;
-        }
 
-        if (key == arr[i])
-        {
-            return i;
-        }
-        return -1;
+    (*compareCount)++;
+    if (key == arr[i]) {
+      return i;
     }
-    
+    return -1;
+  } else {
+    int last = arr[arrSize - 1];
+    arr[arrSize - 1] = INT_MAX;
+
+    int i = 1;
+    while (key > arr[i]) {
+      i++;
+    }
+    arr[arrSize - 1] = last;
+    if (key == arr[i]) {
+      return i;
+    }
+    return -1;
+  }
+
 }
 
 int Binary_search(int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
-    
-    if (compareTest) {
-        *compareCount = 0;
 
-        // Lecture realization
-        int lo = 0;
-        int hi = arrSize - 1;
-        int mi;
-        (*compareCount)++;  //lo < hi
-        while (lo <= hi)
-        {
-            (*compareCount)++; //lo < hi
+  if (compareTest) {
+    *compareCount = 0;
 
-            mi = (lo + hi) / 2;
-            (*compareCount)++;; //arr[mi] == key
-            if (arr[mi] == key) {
-                return mi;
-            }
+    // Lecture realization
+    int lo = 0;
+    int hi = arrSize - 1;
+    int mi;
+    (*compareCount)++;  //lo < hi
+    while (lo <= hi) {
+      (*compareCount)++; //lo < hi
 
-            (*compareCount)++;
-            if (arr[mi] < key) {
-                lo = mi + 1;
-            }
-            else {
-                hi = mi - 1;
-            }
-        }
-        return -1;
+      mi = (lo + hi) / 2;
+      (*compareCount)++;; //arr[mi] == key
+      if (arr[mi] == key) {
+        return mi;
+      }
+
+      (*compareCount)++;
+      if (arr[mi] < key) {
+        lo = mi + 1;
+      } else {
+        hi = mi - 1;
+      }
     }
-    else {
-        // Lecture realization
-        int lo = 0;
-        int hi = arrSize - 1;
-        int mi;
-        while (lo <= hi)
-        {
-            mi = (lo + hi) / 2;
-            if (arr[mi] == key) {
-                return mi;
-            }
+    return -1;
+  } else {
+    // Lecture realization
+    int lo = 0;
+    int hi = arrSize - 1;
+    int mi;
+    while (lo <= hi) {
+      mi = (lo + hi) / 2;
+      if (arr[mi] == key) {
+        return mi;
+      }
 
-            if (arr[mi] < key) {
-                lo = mi + 1;
-            }
-            else {
-                hi = mi - 1;
-            }
-        }
-        return -1;
+      if (arr[mi] < key) {
+        lo = mi + 1;
+      } else {
+        hi = mi - 1;
+      }
     }
-   
+    return -1;
+  }
+
 }
 
 //Генерирует случайную возрастающую последовательность
 //size - размер нужного массива
 //Возвращает arr - указатель на массив
 int* generateIncreaseSequence(int size) {
-    int* arr = new int[size]; //Выделение памяти
-    int step = INT_MAX / size; // Вычисление шага
-    for (int i = 0; i < size; i++)
-        arr[i] = i * step + rand() % step;  //Заполнение массива
-    return arr;
+  int* arr = new int[size]; //Выделение памяти
+  int step = INT_MAX / size; // Вычисление шага
+  for (int i = 0; i < size; i++)
+    arr[i] = i * step + rand() % step;  //Заполнение массива
+  return arr;
 }
 
 //Генерирует случайную последовательность от 0 до INT_MAX
 //size - размер нужного массива
 //Возвращает arr - указатель на массив
 int* generateRandomSequence(int size) {
-    int* arr = new int[size]; //Выделение памяти
-    for (int i = 0; i < size; i++)
-        arr[i] = rand();  //Заполнение массива
-    return arr;
+  int* arr = new int[size]; //Выделение памяти
+  for (int i = 0; i < size; i++)
+    arr[i] = rand();  //Заполнение массива
+  return arr;
 }
 
 //Генерирует целое число x, min <= x <= max
-int RandomIntInRange(int min, int max) {
-    return min + (rand() % static_cast<int>(max - min + 1));
+inline int RandomIntInRange(int min, int max) {
+  return min + (rand() % (max - min + 1));
 }
 
 //Тестирует функцию на временные характеристики
 //Возвращает время выполнения в микросекундах
-long long timeTest(int (*function)(int*, int, int, int*, bool), int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false){
-    auto beginTime = std::chrono::steady_clock::now();
-    int result = function(arr, arrSize, key, compareCount, compareTest);
-    auto endTime = std::chrono::steady_clock::now();
-    auto elapsedMs = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
-    return elapsedMs;
+long long timeTest(int (*function)(int*, int, int, int*, bool), int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false) {
+  auto beginTime = std::chrono::steady_clock::now();
+  int result = function(arr, arrSize, key, compareCount, compareTest);
+  auto endTime = std::chrono::steady_clock::now();
+  auto elapsedMs = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - beginTime).count();
+  return elapsedMs;
 }
 
 int main() {
 
-    const int fcount = 4; //Количество функций
+  const int fcount = 4; //Количество функций
 
-    //Имена функций
-    const char** fnames = new const char* [4]{
-        "Better_Linear_Search\0",
-        "Sentinel_Linear_Search\0",
-        "Sequential_Linear_Search\0",
-        "Binary_search\0"
-    };
+  //Имена функций
+  const char** fnames = new const char* [4]{
+      "Better_Linear_Search\0",
+      "Sentinel_Linear_Search\0",
+      "Sequential_Linear_Search\0",
+      "Binary_search\0"
+  };
 
-    //Массив указателей на функции
-    int (*funcs[])(int*, int, int, int*, bool) = {
-        Better_Linear_Search,
-        Sentinel_Linear_Search,
-        Sequential_Linear_Search,
-        Binary_search
-    };
+  //Массив указателей на функции
+  int (*funcs[])(int*, int, int, int*, bool) = {
+      Better_Linear_Search,
+      Sentinel_Linear_Search,
+      Sequential_Linear_Search,
+      Binary_search
+  };
 
-    //Инициализация рандомизатора
-    srand(time(NULL));
+  //Инициализация рандомизатора
+  srand(time(NULL));
 
-    //Тестирование функций на работоспособность
-    
-    //Создание маленьких последовательностей
-    int* increaseSequence = generateIncreaseSequence(30);
-    int* randomSequence = generateRandomSequence(30);
+  //Тестирование функций на работоспособность
 
-    //Получаем случайный индекс в массиве
-    int index = RandomIntInRange(0, 30);
+  //Создание маленьких последовательностей
+  int* increaseSequence = generateIncreaseSequence(30);
+  int* randomSequence = generateRandomSequence(30);
 
-    std::cout << "Index: " << index << std::endl;
-    for (int i = 0; i < 2; i++)
-    {
-        int comparecount = 0;
-        //Ишем по значению
-        int found = funcs[i](randomSequence, 30, randomSequence[index], &comparecount, true);
-        std::cout << fnames[i] << ": ";
-        
-        //Если найденный индекс совпадает с изначальным, то функция работает верно
-        if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
-        std::cout << "Comparecount: " << comparecount;
-        std::cout << std::endl;
+  //Получаем случайный индекс в массиве
+  int index = RandomIntInRange(0, 30);
+
+  std::cout << "Index: " << index << std::endl;
+  for (int i = 0; i < 2; i++) {
+    int comparecount = 0;
+    //Ишем по значению
+    int found = funcs[i](randomSequence, 30, randomSequence[index], &comparecount, true);
+    std::cout << fnames[i] << ": ";
+
+    //Если найденный индекс совпадает с изначальным, то функция работает верно
+    if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
+    std::cout << "Comparecount: " << comparecount;
+    std::cout << std::endl;
+  }
+
+  for (int i = 2; i < fcount; i++) {
+    //Аналогично предыдущему
+    int comparecount = 0;
+    //Ишем по значению
+    int found = funcs[i](increaseSequence, 30, increaseSequence[index], &comparecount, true);
+    std::cout << fnames[i] << ": ";
+
+    //Если найденный индекс совпадает с изначальным, то функция работает верно
+    if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
+    std::cout << "Comparecount: " << comparecount;
+    std::cout << std::endl;
+  }
+
+  //Тестирование функций на больших масштабах
+
+  const int bigsize = 500000; //Размер больших последовательностей
+
+  int* BigRandomSequence = generateRandomSequence(bigsize);
+  int* BigIncreaseSequence = generateIncreaseSequence(bigsize);
+
+  //Формирование тестового набора. В наборе точно не будет INT_MAX
+  const int testCount = 1000;
+  int* testSet = new int[testCount];
+
+  int intervalSize = bigsize / testCount;
+
+  for (int i = 0; i < testCount; i++)
+    testSet[i] = rand() % intervalSize + intervalSize * i;
+
+  std::ofstream found_file("test_found.csv", std::ofstream::out | std::ofstream::app);
+  std::ofstream not_found_file("test_not_found.csv", std::ofstream::out | std::ofstream::app);
+
+  //Подготовка файлов. 
+
+
+  for (int i = 0; i < fcount; i++)
+    found_file << fnames[i] << ';';
+  found_file << '\n';
+
+  //Тесты найдено.
+  for (int i = 0; i < testCount; i++) {
+
+    for (int j = 0; j < 2; j++) {
+      found_file << timeTest(funcs[j], BigRandomSequence, bigsize, BigRandomSequence[testSet[i]]) << ';';
     }
 
-    for (int i = 2; i < fcount; i++)
-    {
-        //Аналогично предыдущему
-        int comparecount = 0;
-        //Ишем по значению
-        int found = funcs[i](increaseSequence, 30, increaseSequence[index], &comparecount, true);
-        std::cout << fnames[i] << ": ";
-
-        //Если найденный индекс совпадает с изначальным, то функция работает верно
-        if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
-        std::cout << "Comparecount: " << comparecount;
-        std::cout << std::endl;
+    for (int j = 2; j < 4; j++) {
+      found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, BigIncreaseSequence[testSet[i]]) << ';';
     }
 
-    //Тестирование функций на больших масштабах
-
-    const int bigsize = 500000; //Размер больших последовательностей
-
-    int* BigRandomSequence = generateRandomSequence(bigsize);
-    int* BigIncreaseSequence = generateIncreaseSequence(bigsize);
-
-    //Формирование тестового набора. В наборе точно не будет INT_MAX
-    const int testCount = 1000;
-    int* testSet = new int[testCount];
-
-    for (int i = 0; i < testCount; i++)
-        testSet[i] = RandomIntInRange(0, bigsize);
-
-    std::ofstream found_file("test_found.csv", std::ofstream::out | std::ofstream::app);
-    std::ofstream not_found_file("test_not_found.csv", std::ofstream::out | std::ofstream::app);
-
-   //Подготовка файлов. 
-
-
-    for (int i = 0; i < fcount; i++)
-        found_file << fnames[i] << ';';
     found_file << '\n';
 
-    //Тесты найдено.
-    for (int i = 0; i < testCount; i++)
-    {
+  }
 
-        for (int j = 0; j < 2; j++) {
-            found_file << timeTest(funcs[j], BigRandomSequence, bigsize, BigRandomSequence[testSet[i]]) << ';';
-        }
+  for (int i = 0; i < fcount; i++)
+    not_found_file << fnames[i] << ';';
+  not_found_file << '\n';
 
-        for (int j = 0; j < 2; j++) {
-            found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, BigIncreaseSequence[testSet[i]]) << ';';
-        }
+  //Тесты не найдено.
+  for (int i = 0; i < testCount; i++) {
 
-        found_file << '\n';
-
+    for (int j = 0; j < 2; j++) {
+      not_found_file << timeTest(funcs[j], BigRandomSequence, bigsize, INT_MAX) << ';';
     }
 
-    for (int i = 0; i < fcount; i++)
-        not_found_file << fnames[i] << ';';
+    for (int j = 2; j < 4; j++) {
+      not_found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, INT_MAX) << ';';
+    }
+
     not_found_file << '\n';
 
-    //Тесты не найдено.
-    for (int i = 0; i < testCount; i++)
-    {
-
-        for (int j = 0; j < 2; j++) {
-            not_found_file << timeTest(funcs[j], BigRandomSequence, bigsize, INT_MAX) << ';';
-        }
-
-        for (int j = 0; j < 2; j++) {
-            not_found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, INT_MAX) << ';';
-        }
-
-        not_found_file << '\n';
-
-    }
+  }
 }
 /**********************************END-OF-K2L2.CPP******************************/
