@@ -132,7 +132,7 @@ int Binary_search(int* arr, int arrSize, int key, int* compareCount = NULL, bool
         int hi = arrSize - 1;
         int mi;
         (*compareCount)++;  //lo < hi
-        while (lo < hi)
+        while (lo <= hi)
         {
             (*compareCount)++; //lo < hi
 
@@ -150,14 +150,14 @@ int Binary_search(int* arr, int arrSize, int key, int* compareCount = NULL, bool
                 hi = mi - 1;
             }
         }
-
+        return -1;
     }
     else {
         // Lecture realization
         int lo = 0;
         int hi = arrSize - 1;
         int mi;
-        while (lo < hi)
+        while (lo <= hi)
         {
             mi = (lo + hi) / 2;
             if (arr[mi] == key) {
@@ -171,6 +171,7 @@ int Binary_search(int* arr, int arrSize, int key, int* compareCount = NULL, bool
                 hi = mi - 1;
             }
         }
+        return -1;
     }
    
 }
@@ -180,7 +181,7 @@ int Binary_search(int* arr, int arrSize, int key, int* compareCount = NULL, bool
 //Возвращает arr - указатель на массив
 int* generateIncreaseSequence(int size) {
     int* arr = new int[size]; //Выделение памяти
-    int step = 5; // Вычисление шага
+    int step = INT_MAX / size; // Вычисление шага
     for (int i = 0; i < size; i++)
         arr[i] = i * step + rand() % step;  //Заполнение массива
     return arr;
@@ -196,25 +197,34 @@ int* generateRandomSequence(int size) {
     return arr;
 }
 
-inline int randintinrng(int min, int max) {
-    return min + (rand() % max - min + 1);
+//Генерирует целое число x, min <= x <= max
+int RandomIntInRange(int min, int max) {
+    return min + (rand() % static_cast<int>(max - min + 1));
+}
+
+//Тестирует функцию на временные характеристики
+//Возвращает время выполнения в микросекундах
+long long timeTest(int (*function)(int*, int, int, int*, bool), int* arr, int arrSize, int key, int* compareCount = NULL, bool compareTest = false){
+    auto beginTime = std::chrono::steady_clock::now();
+    int result = function(arr, arrSize, key, compareCount, compareTest);
+    auto endTime = std::chrono::steady_clock::now();
+    auto elapsedMs = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
+    return elapsedMs;
 }
 
 int main() {
-    //Инициализация рандомизатора
-    srand(time(NULL));
 
-    int* increaseSequence = generateIncreaseSequence(30);
-    int* randomSequence = generateRandomSequence(30);
+    const int fcount = 4; //Количество функций
 
-    //Тестирование функций на работоспособность
-    const int fcount = 4;
-    const char** fnames = new const char*[4]{ 
-        "Better_Linear_Search\0", 
-        "Sentinel_Linear_Search\0", 
-        "Sequential_Linear_Search\0", 
+    //Имена функций
+    const char** fnames = new const char* [4]{
+        "Better_Linear_Search\0",
+        "Sentinel_Linear_Search\0",
+        "Sequential_Linear_Search\0",
         "Binary_search\0"
     };
+
+    //Массив указателей на функции
     int (*funcs[])(int*, int, int, int*, bool) = {
         Better_Linear_Search,
         Sentinel_Linear_Search,
@@ -222,14 +232,27 @@ int main() {
         Binary_search
     };
 
-    int index = randintinrng(0, 30);
+    //Инициализация рандомизатора
+    srand(time(NULL));
+
+    //Тестирование функций на работоспособность
+    
+    //Создание маленьких последовательностей
+    int* increaseSequence = generateIncreaseSequence(30);
+    int* randomSequence = generateRandomSequence(30);
+
+    //Получаем случайный индекс в массиве
+    int index = RandomIntInRange(0, 30);
 
     std::cout << "Index: " << index << std::endl;
     for (int i = 0; i < 2; i++)
     {
         int comparecount = 0;
+        //Ишем по значению
         int found = funcs[i](randomSequence, 30, randomSequence[index], &comparecount, true);
         std::cout << fnames[i] << ": ";
+        
+        //Если найденный индекс совпадает с изначальным, то функция работает верно
         if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
         std::cout << "Comparecount: " << comparecount;
         std::cout << std::endl;
@@ -237,86 +260,76 @@ int main() {
 
     for (int i = 2; i < fcount; i++)
     {
+        //Аналогично предыдущему
         int comparecount = 0;
+        //Ишем по значению
         int found = funcs[i](increaseSequence, 30, increaseSequence[index], &comparecount, true);
-        std::cout << std::setw(10) << fnames[i] << ": ";
+        std::cout << fnames[i] << ": ";
+
+        //Если найденный индекс совпадает с изначальным, то функция работает верно
         if (found == index) std::cout << "OK. "; else std::cout << "NOT OK. ";
         std::cout << "Comparecount: " << comparecount;
         std::cout << std::endl;
     }
 
-    const int bigsize = 500000;
+    //Тестирование функций на больших масштабах
 
-    int* BigrandomSequence = generateRandomSequence(bigsize);
-    int* BigincreaseSequence = generateIncreaseSequence(bigsize);
-    
+    const int bigsize = 500000; //Размер больших последовательностей
 
-    std::cout << "Sequences generated" << std::endl;
+    int* BigRandomSequence = generateRandomSequence(bigsize);
+    int* BigIncreaseSequence = generateIncreaseSequence(bigsize);
 
-    //Тесты
-    const int testCount = 100000;
+    //Формирование тестового набора. В наборе точно не будет INT_MAX
+    const int testCount = 1000;
     int* testSet = new int[testCount];
 
-    std::ofstream ofs("tests.csv", std::ofstream::out | std::ofstream::app);
+    for (int i = 0; i < testCount; i++)
+        testSet[i] = RandomIntInRange(0, bigsize);
 
-    //Формирование тестового набора
-    ofs << "Value;";
-    for (int i = 0; i < testCount; i++) {
-        testSet[i] = rand();
-        ofs << testSet[i] << ';';
-    }
-    ofs << '\n';
+    std::ofstream found_file("test_found.csv", std::ofstream::out | std::ofstream::app);
+    std::ofstream not_found_file("test_not_found.csv", std::ofstream::out | std::ofstream::app);
 
-    for (int i = 0; i < 2; i++) {
-        
-        bool* answerSet = new bool[testCount];
+   //Подготовка файлов. 
 
-        ofs << fnames[i] << ';';
 
-        for (int j = 0; j < testCount; j++) {
+    for (int i = 0; i < fcount; i++)
+        found_file << fnames[i] << ';';
+    found_file << '\n';
 
-            auto beginTime = std::chrono::steady_clock::now();
-            int result = funcs[i](BigrandomSequence, bigsize, testSet[j], NULL, false);
-            answerSet[j] = result != -1;
-            auto endTime = std::chrono::steady_clock::now();
+    //Тесты найдено.
+    for (int i = 0; i < testCount; i++)
+    {
 
-            auto elapsedMs = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
-
-            ofs << elapsedMs << ';';
+        for (int j = 0; j < 2; j++) {
+            found_file << timeTest(funcs[j], BigRandomSequence, bigsize, BigRandomSequence[testSet[i]]) << ';';
         }
 
-        ofs << '\n' << "Ans;";
-        for (int j = 0; j < testCount; j++) {
-            ofs << answerSet[j] << ';';
+        for (int j = 0; j < 2; j++) {
+            found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, BigIncreaseSequence[testSet[i]]) << ';';
         }
-        delete[] answerSet;
-        ofs << '\n';
+
+        found_file << '\n';
+
     }
 
-    for (int i = 2; i < fcount; i++) {
-        bool* answerSet = new bool[testCount];
+    for (int i = 0; i < fcount; i++)
+        not_found_file << fnames[i] << ';';
+    not_found_file << '\n';
 
-        ofs << fnames[i] << ';';
+    //Тесты не найдено.
+    for (int i = 0; i < testCount; i++)
+    {
 
-        for (int j = 0; j < testCount; j++) {
-
-            auto beginTime = std::chrono::steady_clock::now();
-            int result = funcs[i](BigincreaseSequence, bigsize, testSet[j], NULL, false);
-            answerSet[j] = result != -1;
-            auto endTime = std::chrono::steady_clock::now();
-
-            auto elapsedMs = std::chrono::duration_cast<std::chrono::microseconds>(endTime - beginTime).count();
-
-            ofs << elapsedMs << ';';
+        for (int j = 0; j < 2; j++) {
+            not_found_file << timeTest(funcs[j], BigRandomSequence, bigsize, INT_MAX) << ';';
         }
 
-        ofs << '\n' << "Ans;";
-        for (int j = 0; j < testCount; j++) {
-            ofs << answerSet[j] << ';';
+        for (int j = 0; j < 2; j++) {
+            not_found_file << timeTest(funcs[j], BigIncreaseSequence, bigsize, INT_MAX) << ';';
         }
-        delete[] answerSet;
-        ofs << '\n';
+
+        not_found_file << '\n';
+
     }
-
 }
 /**********************************END-OF-K2L2.CPP******************************/
