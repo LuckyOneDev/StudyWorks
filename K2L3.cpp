@@ -150,6 +150,39 @@ void Merge_Sort(int* arr, int left, int right, bool fullPrint = false, std::ofst
     
 }
 
+int Partition(int* arr, int left, int right) {
+    int middle = left;
+
+    for (int u = 0; u < right - 1; u++) {
+        if (arr[u] <= arr[right]) {
+            std::swap(arr[u], arr[middle]);
+            middle++;
+        }
+    }
+    std::swap(arr[middle], arr[right]);
+
+    return middle;
+}
+
+// another draft
+void Quick_Sort(int* arr, int left, int right, bool fullPrint = false, std::ofstream str = std::ofstream()) {
+    if (left >= right) {
+        return;
+    }
+
+    int middle = Partition(arr, left, right);
+
+    if (fullPrint) {
+        printSequence(arr + left, right);
+    }
+
+    Quick_Sort(arr, left, middle - 1, fullPrint);
+    Quick_Sort(arr, middle + 1, right, fullPrint);
+    
+}
+
+
+
 template <typename ... Types>
 long long timeTest(void (*function)(Types ... args), int* arr, Types ... args) {
     auto beginTime = std::chrono::steady_clock::now();
