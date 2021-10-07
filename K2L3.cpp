@@ -5,13 +5,10 @@
 #include <chrono>
 #include <iomanip>
 
-//Выводит элементы массива seq размера size и добавляет перед ним строку title. 
-//В скобках выводится размер массива.
-//title+[sequence](size)
-void printSequence(int* seq, int size, const char* title = "") {
-    std::cout << title;
+//Выводит элементы массива seq размера size в квадратных скобках
+void printSequence(int* seq, int size) {
     std::cout << "[";
-    for (int i = 0; i < size - 1; i++) 
+    for (int i = 0; i < size - 1; i++)
     {
         if (seq[i] == INT_MAX) {
             std::cout << "INT_MAX" << ", ";
@@ -19,14 +16,14 @@ void printSequence(int* seq, int size, const char* title = "") {
         else {
             std::cout << seq[i] << ", ";
         }
-        
+
     }
 
     if (seq[size - 1] == INT_MAX) {
-        std::cout << "INT_MAX" << "](" << size << ")\n";
+        std::cout << "INT_MAX" << "]\n";
     }
     else {
-        std::cout << seq[size - 1] << "](" << size << ")\n";
+        std::cout << seq[size - 1] << "]\n";
     }
 }
 
@@ -37,156 +34,103 @@ int* generateRandomSequence(int size) {
     return arr;
 }
 
-void Selection_Sort(int* arr, int n, bool fullPrint = false, std::ofstream str = std::ofstream() ) {
+void Selection_Sort(int* arr, int arrSize, bool fullPrint = false, int* compareCount = NULL, int* transposeCount = NULL) {
+    (*compareCount) = 0;
     if (fullPrint) {
-        for (int i = 0; i < n - 1; i++) {
-            int smallest = i;
-            for (int j = 0; j < n; j++) {
-                if (arr[j] < arr[smallest]) {
-                    smallest = j;
+        (*compareCount)++;
+        for (int i = 0; i < arrSize - 1; i++) {
+            (*compareCount)++;
+            int min = i;
+            (*compareCount)++;
+            for (int j = i + 1; j < arrSize; j++) {
+                (*compareCount)++;
+                (*compareCount)++;
+                if (arr[j] < arr[min]) {
+                    min = j;
                 }
             }
-            std::swap(arr[i], arr[smallest]);
-            printSequence(arr, n);
+            (*transposeCount) +=2;
+            std::swap(arr[i], arr[min]);
+            printSequence(arr, arrSize);
         }
     }
     else {
-        for (int i = 0; i < n - 1; i++) {
-            int smallest = i;
-            for (int j = 0; j < n; j++) {
-                if (arr[j] < arr[smallest]) {
-                    smallest = j;
+        (*compareCount)++;
+        for (int i = 0; i < arrSize - 1; i++) {
+            (*compareCount)++;
+            int min = i;
+            (*compareCount)++;
+            for (int j = i + 1; j < arrSize; j++) {
+                (*compareCount)++;
+                (*compareCount)++;
+                if (arr[j] < arr[min]) {
+                    min = j;
                 }
             }
-            std::swap(arr[i], arr[smallest]);
+            (*transposeCount) += 2;
+            std::swap(arr[i], arr[min]);
         }
     }
-    
+
 }
 
-void Insertion_Sort(int* arr, int n, bool fullPrint = false, std::ofstream str = std::ofstream()) {
-    if (fullPrint) {
-        for (int i = 1; i < n; i++) {
-            int key = arr[i];
-            int j = i - 1;
-            while (j > 0 && arr[j] > key) {
-                arr[j + 1] = arr[j];
-                j--;
-            }
-            arr[j + 1] = key;
-            printSequence(arr, n);
-        }
-    }
-    else {
-        for (int i = 1; i < n; i++) {
-            int key = arr[i];
-            int j = i - 1;
-            while (j > 0 && arr[j] > key) {
-                arr[j + 1] = arr[j];
-                j--;
-            }
-            arr[j + 1] = key;
-        }
-    }
-    
-}
+int Partition(int* arr, int left, int right, int* compareCount = NULL, int* transposeCount = NULL) {
+    int pivot = arr[right];    // pivot
+    int i = (left - 1);  // Index of smaller element
 
-void Merge(int* arr, int left, int mid, int right) {
-    int leftSubArraySize = mid - left + 2;
-    int rightSubArraySize = right - mid + 1;
-
-    int* leftSubArray = new int[leftSubArraySize];
-    int* rightSubArray = new int[rightSubArraySize];
-
-    for (int i = 0; i < leftSubArraySize - 1; i++) {
-        leftSubArray[i] = arr[left + i];
-    }
-
-    leftSubArray[leftSubArraySize - 1] = INT_MAX;
-
-    for (int i = 0; i < rightSubArraySize - 1; i++) {
-        rightSubArray[i] = arr[mid + 1 + i];
-    }
-        
-    rightSubArray[rightSubArraySize - 1] = INT_MAX;
-
-    int lCounter = 0;
-    int rCounter = 0;
-
-    for (int i = left; i <= right; i++)
+    (*compareCount)++;
+    for (int j = left; j <= right - 1; j++)
     {
-        if (leftSubArray[lCounter] < rightSubArray[rCounter]) {
-            arr[i] = leftSubArray[lCounter];
-            lCounter++;
-        }
-        else {
-            arr[i] = rightSubArray[rCounter];
-            rCounter++;
-        }
-    }
+        (*compareCount)++;
+        // If current element is smaller than or
+        // equal to pivot
 
-    delete[] leftSubArray;
-    delete[] rightSubArray;
-}
-
-void Merge_Sort(int* arr, int left, int right, bool fullPrint = false, std::ofstream str = std::ofstream() ) {
-    if (fullPrint) {
-        if (right != left) {
-            int mid = (left + right) / 2;
-            Merge_Sort(arr, left, mid, true);
-            Merge_Sort(arr, mid + 1, right, true);
-            Merge(arr, left, mid, right);
-            printSequence(arr, right + 1);
+        (*compareCount)++;
+        if (arr[j] <= pivot)
+        {
+            i++;    // increment index of smaller element
+            (*transposeCount) += 2;
+            std::swap(arr[i], arr[j]);
         }
     }
-    else {
-        if (left < right) {
-            int q = (left + right) / 2;
-            Merge_Sort(arr, left, q);
-            Merge_Sort(arr, q + 1, right);
-            Merge(arr, left, q, right);
-        }
-    }
-    
-}
-
-int Partition(int* arr, int left, int right) {
-    int middle = left;
-
-    for (int u = 0; u < right - 1; u++) {
-        if (arr[u] <= arr[right]) {
-            std::swap(arr[u], arr[middle]);
-            middle++;
-        }
-    }
-    std::swap(arr[middle], arr[right]);
-
-    return middle;
+    (*transposeCount) += 2;
+    std::swap(arr[i + 1], arr[right]);
+    return (i + 1);
 }
 
 // another draft
-void Quick_Sort(int* arr, int left, int right, bool fullPrint = false, std::ofstream str = std::ofstream()) {
-    if (left >= right) {
-        return;
-    }
-
-    int middle = Partition(arr, left, right);
-
+void Quick_Sort(int* arr, int left, int right, bool fullPrint = false, int maxSize = -1, int* compareCount = NULL, int* transposeCount = NULL) {
     if (fullPrint) {
-        printSequence(arr + left, right);
-    }
+        (*compareCount)++;
+        if (left < right) {
+            printSequence(arr, maxSize);
 
-    Quick_Sort(arr, left, middle - 1, fullPrint);
-    Quick_Sort(arr, middle + 1, right, fullPrint);
+            int middle = Partition(arr, left, right, compareCount, transposeCount);
+
+            Quick_Sort(arr, left, middle - 1, fullPrint, maxSize, compareCount, transposeCount);
+            Quick_Sort(arr, middle + 1, right, fullPrint, maxSize, compareCount, transposeCount);
+
+        }
+    }
+    else {
+        (*compareCount)++;
+        if (left < right) {
+
+            int middle = Partition(arr, left, right, compareCount, transposeCount);
+
+            Quick_Sort(arr, left, middle - 1, fullPrint, maxSize, compareCount, transposeCount);
+            Quick_Sort(arr, middle + 1, right, fullPrint, maxSize, compareCount, transposeCount);
+
+        }
+    }
     
+
 }
 
-
-
 template <typename ... Types>
-long long timeTest(void (*function)(Types ... args), int* arr, Types ... args) {
+long long timeTest(void (*function)(Types ... args), Types ... args) {
     auto beginTime = std::chrono::steady_clock::now();
-    function(args);
+    function(args...);
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedMs = std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - beginTime).count();
     return elapsedMs;
@@ -198,9 +142,60 @@ int main()
     //Инициализация рандомизатора
     srand(time(NULL));
 
-    const int smallSize = 6;
+    const int smallSize = 7;
+   
+    std::cout << "TEST FOR SIZE: " << smallSize << std::endl;
+
     int* sequence = generateRandomSequence(smallSize);
+    int compareCount = 0;
+    int transposeCount = 0;
+    Selection_Sort(sequence, smallSize, true, &compareCount, &transposeCount);
+    std::cout << "Selection_Sort. compareCount: " << compareCount << " transposeCount: " << transposeCount << std::endl;
+    std::cout << std::endl;
+   
+    sequence = generateRandomSequence(smallSize);
+    compareCount = 0;
+    transposeCount = 0;
+    Quick_Sort(sequence, 0, smallSize - 1, true, smallSize, &compareCount, &transposeCount);
+    std::cout << "Quick_Sort. compareCount: " << compareCount << " transposeCount: " << transposeCount << std::endl;
 
-    Selection_Sort(sequence, smallSize, true);
+    std::ofstream file("Selection_Sort.csv");
+    file << "count" << ';' << "compareCount" << ';' << "transposeCount" << ';' << "time" << '\n';
 
+
+    for (int i = 0; i < 7; i++)
+    {
+        int count = pow(10, i);
+        sequence = generateRandomSequence(count);
+
+        compareCount = 0;
+        transposeCount = 0;
+        auto time = timeTest(Selection_Sort, sequence, count, false, &compareCount, &transposeCount);
+        
+        file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
+
+        delete[] sequence;
+
+        std::cout << "Loop " << i << " complete" << std::endl;
+    }
+
+    file.close();
+    file.open("Quick_Sort.csv");
+    file << "count" << ';' << "compareCount" << ';' << "transposeCount" << ';' << "time" << '\n';
+
+    for (int i = 0; i < 7; i++)
+    {
+        int count = pow(10, i);
+        sequence = generateRandomSequence(count);
+
+        compareCount = 0;
+        transposeCount = 0;
+        auto time = timeTest(Quick_Sort, sequence, 0, count - 1, false, smallSize, &compareCount, &transposeCount);
+
+        file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
+
+        delete[] sequence;
+        
+        std::cout << "Loop " << i << " complete" << std::endl;
+    }
 }
