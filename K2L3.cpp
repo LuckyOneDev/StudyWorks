@@ -160,7 +160,6 @@ int main()
     srand(time(NULL));
 
     const int smallSize = 7;
-   
     std::cout << "TEST FOR SIZE: " << smallSize << std::endl;
 
     int* firstSequence = generateRandomSequence(smallSize);
@@ -182,41 +181,51 @@ int main()
     delete [] firstSequence;
     delete [] secondSequence;
 
-    std::ofstream file("Sorts.csv");
-    file << "count" << ';' 
-        << "Selection_sort_compareCount" << ';' 
-        << "Selection_sort_transposeCount" << ';' 
-        << "Selection_sort_time" << ';'
-        << "Quick_sort_compareCount" << ';' 
-        << "Quick_sort_transposeCount" << ';' 
-        << "Quick_sort_time" << '\n';
+    int seqCount = 3;
+    char* seqNames[] = {"Sorts.csv", "Sorts_increase.csv", "Sorts_decrease.csv"};
+    int* (*seqFuncs[]) (int) = {
+        generateRandomSequence,
+        generateIncreaseSequence,
+        generateDecreaseSequence
+     };
 
-    for (int i = 0; i < 7; i++)
+    for (int k = 0; k < seqCount; k++)
     {
-        int count = pow(10, i);
-        //creating two same sequences
-        firstSequence = generateRandomSequence(count);
-        secondSequence = new int[count];
-        std::copy(firstSequence, firstSequence + count, secondSequence);
+        std::ofstream file(seqNames[k]);
+        file << "count" << ';' 
+            << "Selection_sort_compareCount" << ';' 
+            << "Selection_sort_transposeCount" << ';' 
+            << "Selection_sort_time" << ';'
+            << "Quick_sort_compareCount" << ';' 
+            << "Quick_sort_transposeCount" << ';' 
+            << "Quick_sort_time" << '\n';
 
-        compareCount = 0;
-        transposeCount = 0;
-        auto time = timeTest(Selection_Sort, firstSequence, count, false, &compareCount, &transposeCount);
-        
-        file << count << ';' << compareCount << ';' << transposeCount << ';' << time << ';';
+        //полноразмерное тестирование
+        for (int i = 0; i < 7; i++)
+        {
+            int count = pow(10, i);
+            //creating two same sequences
+            firstSequence = seqFuncs[k](count);
+            secondSequence = new int[count];
+            std::copy(firstSequence, firstSequence + count, secondSequence);
 
-        compareCount = 0;
-        transposeCount = 0;
-        auto time = timeTest(Quick_Sort, secondSequence, 0, count - 1, false, count, &compareCount, &transposeCount);
+            compareCount = 0;
+            transposeCount = 0;
+            auto time = timeTest(Selection_Sort, firstSequence, count, false, &compareCount, &transposeCount);
+            file << count << ';' << compareCount << ';' << transposeCount << ';' << time << ';';
 
-        file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
+            compareCount = 0;
+            transposeCount = 0;
+            auto time = timeTest(Quick_Sort, secondSequence, 0, count - 1, false, count, &compareCount, &transposeCount);
+            file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
 
 
-        delete[] firstSequence;
-        delete [] secondSequence;
+            delete[] firstSequence;
+            delete [] secondSequence;
 
-        std::cout << "Loop " << i << " complete" << std::endl;
+            std::cout << "Loop " << i << " complete" << std::endl;
+        }
+
+        file.close();
     }
-
-    file.close();
 }
