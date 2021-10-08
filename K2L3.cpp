@@ -34,6 +34,23 @@ int* generateRandomSequence(int size) {
     return arr;
 }
 
+int* generateIncreaseSequence(int size) {
+  int* arr = new int[size]; //Выделение памяти
+  int step = INT_MAX / size; // Вычисление шага
+  for (int i = 0; i < size; i++)
+    arr[i] = i * step + rand() % step;  //Заполнение массива
+  return arr;
+}
+
+int* generateDecreaseSequence(int size) {
+  int* arr = new int[size]; //Выделение памяти
+  int step = INT_MAX / size; // Вычисление шага
+  for (int i = size - 1; i >= 0; i--)
+    arr[i] = (size - i - 1) * step + rand() % step;  //Заполнение массива
+  return arr;
+}
+
+
 void Selection_Sort(int* arr, int arrSize, bool fullPrint = false, int* compareCount = NULL, int* transposeCount = NULL) {
     (*compareCount) = 0;
     if (fullPrint) {
@@ -146,56 +163,60 @@ int main()
    
     std::cout << "TEST FOR SIZE: " << smallSize << std::endl;
 
-    int* sequence = generateRandomSequence(smallSize);
+    int* firstSequence = generateRandomSequence(smallSize);
+    int* secondSequence = new int[smallSize];
+    std::copy(firstSequence, firstSequence + smallSize, secondSequence);
+
     int compareCount = 0;
     int transposeCount = 0;
-    Selection_Sort(sequence, smallSize, true, &compareCount, &transposeCount);
+    Selection_Sort(firstSequence, smallSize, true, &compareCount, &transposeCount);
     std::cout << "Selection_Sort. compareCount: " << compareCount << " transposeCount: " << transposeCount << std::endl;
     std::cout << std::endl;
    
-    sequence = generateRandomSequence(smallSize);
+
     compareCount = 0;
     transposeCount = 0;
-    Quick_Sort(sequence, 0, smallSize - 1, true, smallSize, &compareCount, &transposeCount);
+    Quick_Sort(secondSequence, 0, smallSize - 1, true, smallSize, &compareCount, &transposeCount);
     std::cout << "Quick_Sort. compareCount: " << compareCount << " transposeCount: " << transposeCount << std::endl;
 
-    std::ofstream file("Selection_Sort.csv");
-    file << "count" << ';' << "compareCount" << ';' << "transposeCount" << ';' << "time" << '\n';
+    delete [] firstSequence;
+    delete [] secondSequence;
 
+    std::ofstream file("Sorts.csv");
+    file << "count" << ';' 
+        << "Selection_sort_compareCount" << ';' 
+        << "Selection_sort_transposeCount" << ';' 
+        << "Selection_sort_time" << ';'
+        << "Quick_sort_compareCount" << ';' 
+        << "Quick_sort_transposeCount" << ';' 
+        << "Quick_sort_time" << '\n';
 
     for (int i = 0; i < 7; i++)
     {
         int count = pow(10, i);
-        sequence = generateRandomSequence(count);
+        //creating two same sequences
+        firstSequence = generateRandomSequence(count);
+        secondSequence = new int[count];
+        std::copy(firstSequence, firstSequence + count, secondSequence);
 
         compareCount = 0;
         transposeCount = 0;
-        auto time = timeTest(Selection_Sort, sequence, count, false, &compareCount, &transposeCount);
+        auto time = timeTest(Selection_Sort, firstSequence, count, false, &compareCount, &transposeCount);
         
+        file << count << ';' << compareCount << ';' << transposeCount << ';' << time << ';';
+
+        compareCount = 0;
+        transposeCount = 0;
+        auto time = timeTest(Quick_Sort, secondSequence, 0, count - 1, false, count, &compareCount, &transposeCount);
+
         file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
 
-        delete[] sequence;
+
+        delete[] firstSequence;
+        delete [] secondSequence;
 
         std::cout << "Loop " << i << " complete" << std::endl;
     }
 
     file.close();
-    file.open("Quick_Sort.csv");
-    file << "count" << ';' << "compareCount" << ';' << "transposeCount" << ';' << "time" << '\n';
-
-    for (int i = 0; i < 7; i++)
-    {
-        int count = pow(10, i);
-        sequence = generateRandomSequence(count);
-
-        compareCount = 0;
-        transposeCount = 0;
-        auto time = timeTest(Quick_Sort, sequence, 0, count - 1, false, smallSize, &compareCount, &transposeCount);
-
-        file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
-
-        delete[] sequence;
-        
-        std::cout << "Loop " << i << " complete" << std::endl;
-    }
 }
