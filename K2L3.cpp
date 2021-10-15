@@ -55,16 +55,19 @@ void Selection_Sort(int* arr, int arrSize, bool fullPrint = false, int* compareC
 		(*compareCount)++;
 		for (int i = 0; i < arrSize - 1; i++) {
 			(*compareCount)++;
+			//находим номер минимального значения
 			int min = i;
 			(*compareCount)++;
 			for (int j = i + 1; j < arrSize; j++) {
 				(*compareCount)++;
 				(*compareCount)++;
+				//значение первой неотсортированной позиции
 				if (arr[j] < arr[min]) {
 					min = j;
 				}
 			}
 			(*transposeCount) += 2;
+			//производим обмен
 			std::swap(arr[i], arr[min]);
 			printSequence(arr, arrSize);
 		}
@@ -208,34 +211,34 @@ int main()
 			<< "Quick_sort_time" << '\n';
 
 		//полноразмерное тестирование
-		for (int i = 1; i < 5; i++)
+		for (int i = 1; i < 6; i++) {
 			//Количество элементов массива - степень десяти
 			int count = pow(10, i);
 
-		// Создаём две одинаковые последовательности
-		firstSequence = seqFuncs[k](count);
-		secondSequence = new int[count];
-		std::copy(firstSequence, firstSequence + count, secondSequence);
+			// Создаём две одинаковые последовательности
+			firstSequence = seqFuncs[k](count);
+			secondSequence = new int[count];
+			std::copy(firstSequence, firstSequence + count, secondSequence);
 
-		//Сбрасываем счётчики и замеряем время
-		compareCount = 0;
-		transposeCount = 0;
-		auto time = timeTest(Selection_Sort, firstSequence, count, false, &compareCount, &transposeCount);
-		//Выводим в файл
-		file << count << ';' << compareCount << ';' << transposeCount << ';' << time << ';';
+			//Сбрасываем счётчики и замеряем время
+			compareCount = 0;
+			transposeCount = 0;
+			auto time = timeTest(Selection_Sort, firstSequence, count, false, &compareCount, &transposeCount);
+			//Выводим в файл
+			file << count << ';' << compareCount << ';' << transposeCount << ';' << time << ';';
 
-		compareCount = 0;
-		transposeCount = 0;
-		auto time = timeTest(Quick_Sort, secondSequence, 0, count - 1, false, count, &compareCount, &transposeCount);
-		file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
+			compareCount = 0;
+			transposeCount = 0;
+			time = timeTest(Quick_Sort, secondSequence, 0, count - 1, false, count, &compareCount, &transposeCount);
+			file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
 
-		//Удаляем последовательности
-		delete[] firstSequence;
-		delete[] secondSequence;
+			//Удаляем последовательности
+			delete[] firstSequence;
+			delete[] secondSequence;
 
-		std::cout << "Loop for " << count << " complete" << std::endl;
+			std::cout << "Loop for " << count << " complete" << std::endl;
+		}
+
+		file.close();
 	}
-
-	file.close();
-}
 }
