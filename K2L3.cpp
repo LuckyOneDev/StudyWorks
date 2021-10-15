@@ -8,20 +8,17 @@
 //Выводит элементы массива seq размера size в квадратных скобках
 void printSequence(int* seq, int size) {
 	std::cout << "[";
-	for (int i = 0; i < size - 1; i++)
-	{
+	for (int i = 0; i < size - 1; i++) {
 		if (seq[i] == INT_MAX) {
 			std::cout << "INT_MAX" << ", ";
-		}
-		else {
+		} else {
 			std::cout << seq[i] << ", ";
 		}
 	}
 
 	if (seq[size - 1] == INT_MAX) {
 		std::cout << "INT_MAX" << "]\n";
-	}
-	else {
+	} else {
 		std::cout << seq[size - 1] << "]\n";
 	}
 }
@@ -66,13 +63,12 @@ void Selection_Sort(int* arr, int arrSize, bool fullPrint = false, int* compareC
 					min = j;
 				}
 			}
-			(*transposeCount) += 2;
+			(*transposeCount)++;
 			//производим обмен
 			std::swap(arr[i], arr[min]);
 			printSequence(arr, arrSize);
 		}
-	}
-	else {
+	} else {
 		(*compareCount)++;
 		for (int i = 0; i < arrSize - 1; i++) {
 			(*compareCount)++;
@@ -85,47 +81,31 @@ void Selection_Sort(int* arr, int arrSize, bool fullPrint = false, int* compareC
 					min = j;
 				}
 			}
-			(*transposeCount) += 2;
+			(*transposeCount)++;
 			std::swap(arr[i], arr[min]);
 		}
 	}
 }
 
 int Partition(int* arr, int left, int right, int* compareCount = NULL, int* transposeCount = NULL) {
-	int pivot = arr[(right + left) / 2];    // pivot
-
-	int i = left;  // Index of smaller element
-	int j = right;
-
+	int middle = (left + right) / 2;
+	(*transposeCount)++;
+	std::swap(arr[middle], arr[right]);
+	int q = left;
 	(*compareCount)++;
-	while (i <= j) {
+	for (int u = left; u <= right - 1; u++) {
 		(*compareCount)++;
-		// Ищем элемент слева меньше среднего
 		(*compareCount)++;
-		while (arr[i] < pivot) {
-			(*compareCount)++;
-			i++;
+		if (arr[u] <= arr[right]) {
+			(*transposeCount)++;
+			std::swap(arr[u], arr[q]);
+			q++;
 		}
-
-		// Ищем элемент справа больше среднего
-		(*compareCount)++;
-		while (arr[j] > pivot) {
-			(*compareCount)++;
-			j--;
-		}
-
-		(*compareCount)++;
-		if (i >= j) break;
-
-		//Меняем их местами
-		(*transposeCount)++;
-		std::swap(arr[i], arr[j]);
-
-		i++;
-		j--;
 	}
+	(*transposeCount)++;
+	std::swap(arr[q], arr[right]);
 
-	return j;
+	return q;
 }
 
 // another draft
@@ -133,20 +113,18 @@ void Quick_Sort(int* arr, int left, int right, bool fullPrint = false, int maxSi
 	if (fullPrint) {
 		(*compareCount)++;
 		if (left < right) {
+			int middle = Partition(arr, left, right, compareCount, transposeCount);
 			printSequence(arr, maxSize);
 
-			int middle = Partition(arr, left, right, compareCount, transposeCount);
-
-			Quick_Sort(arr, left, middle, fullPrint, maxSize, compareCount, transposeCount);
+			Quick_Sort(arr, left, middle - 1, fullPrint, maxSize, compareCount, transposeCount);
 			Quick_Sort(arr, middle + 1, right, fullPrint, maxSize, compareCount, transposeCount);
 		}
-	}
-	else {
+	} else {
 		(*compareCount)++;
 		if (left < right) {
 			int middle = Partition(arr, left, right, compareCount, transposeCount);
 
-			Quick_Sort(arr, left, middle, fullPrint, maxSize, compareCount, transposeCount);
+			Quick_Sort(arr, left, middle - 1, fullPrint, maxSize, compareCount, transposeCount);
 			Quick_Sort(arr, middle + 1, right, fullPrint, maxSize, compareCount, transposeCount);
 		}
 	}
@@ -161,25 +139,26 @@ long long timeTest(void (*function)(Types ... args), Types ... args) {
 	return elapsedMs;
 }
 
-int main()
-{
+int main() {
 	//Инициализация рандомизатора
 	srand(time(NULL));
 
 	//Производим первичные замеры. Тест на работоспособность алгоритмов
-	const int smallSize = 7;
+	const int smallSize = 15;
 	std::cout << "TEST FOR SIZE: " << smallSize << std::endl;
 
 	int* firstSequence = generateRandomSequence(smallSize);
 	int* secondSequence = new int[smallSize];
 	std::copy(firstSequence, firstSequence + smallSize, secondSequence);
-
+	
+	printSequence(firstSequence, smallSize);
 	int compareCount = 0;
 	int transposeCount = 0;
 	Selection_Sort(firstSequence, smallSize, true, &compareCount, &transposeCount);
 	std::cout << "Selection_Sort. compareCount: " << compareCount << " transposeCount: " << transposeCount << std::endl;
 	std::cout << std::endl;
 
+	printSequence(secondSequence, smallSize);
 	compareCount = 0;
 	transposeCount = 0;
 	Quick_Sort(secondSequence, 0, smallSize - 1, true, smallSize, &compareCount, &transposeCount);
@@ -197,8 +176,7 @@ int main()
 		generateDecreaseSequence
 	};
 
-	for (int k = 0; k < seqCount; k++)
-	{
+	for (int k = 0; k < seqCount; k++) {
 		//Открываем файл с нужным названием
 		std::ofstream file(seqNames[k]);
 		//Печать шапки
@@ -209,7 +187,7 @@ int main()
 			<< "Quick_sort_compareCount" << ';'
 			<< "Quick_sort_transposeCount" << ';'
 			<< "Quick_sort_time" << '\n';
-
+		std::cout << seqNames[k] << std::endl;
 		//полноразмерное тестирование
 		for (int i = 1000; i <= 100000; i += 1000) {
 			//Количество элементов массива - степень десяти
