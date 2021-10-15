@@ -211,32 +211,31 @@ int main()
 			<< "Quick_sort_time" << '\n';
 
 		//полноразмерное тестирование
-		for (int i = 1; i < 6; i++) {
+		for (int i = 1000; i <= 100000; i += 1000) {
 			//Количество элементов массива - степень десяти
-			int count = pow(10, i);
 
 			// Создаём две одинаковые последовательности
-			firstSequence = seqFuncs[k](count);
-			secondSequence = new int[count];
-			std::copy(firstSequence, firstSequence + count, secondSequence);
+			firstSequence = seqFuncs[k](i);
+			secondSequence = new int[i];
+			std::copy(firstSequence, firstSequence + i, secondSequence);
 
 			//Сбрасываем счётчики и замеряем время
 			compareCount = 0;
 			transposeCount = 0;
-			auto time = timeTest(Selection_Sort, firstSequence, count, false, &compareCount, &transposeCount);
+			auto time = timeTest(Selection_Sort, firstSequence, i, false, &compareCount, &transposeCount);
 			//Выводим в файл
-			file << count << ';' << compareCount << ';' << transposeCount << ';' << time << ';';
+			file << i << ';' << compareCount << ';' << transposeCount << ';' << time << ';';
 
 			compareCount = 0;
 			transposeCount = 0;
-			time = timeTest(Quick_Sort, secondSequence, 0, count - 1, false, count, &compareCount, &transposeCount);
-			file << count << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
+			time = timeTest(Quick_Sort, secondSequence, 0, i - 1, false, i, &compareCount, &transposeCount);
+			file << i << ';' << compareCount << ';' << transposeCount << ';' << time << '\n';
 
 			//Удаляем последовательности
 			delete[] firstSequence;
 			delete[] secondSequence;
 
-			std::cout << "Loop for " << count << " complete" << std::endl;
+			std::cout << "Loop for " << i << " complete" << std::endl;
 		}
 
 		file.close();
