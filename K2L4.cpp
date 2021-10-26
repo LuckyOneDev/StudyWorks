@@ -95,19 +95,52 @@ void deleteEnd(listEntry* list) {
 	preNext->next = NULL;
 }
 
+void printList(listEntry* list) {
+	int i = 0;
+	listEntry* current = list;
+	while (current != NULL) {
+		std::cout << i << ": " << current->value << std::endl;
+		current = current->next;
+		i++;
+	}
+}
+
 int main()
 {
 	listEntry* list = createList(LIST_SIZE);
 
-	list = pushFront(list, 5125);
-	deleteEnd(list);
-	for (int i = 0; i < LIST_SIZE; i++)
+	
+	
+	printList(list);
+
+	int operation = -1;
+	std::cout << "Choose operation:\n 1)pushFront\n 2)deleteEnd\n 3)findValue\n 4)exit\n";
+	std::cin >> operation;
+	switch (operation)
 	{
-		std::cout << listGet(list, i) << std::endl;
+	case 1:
+		std::cout << "Value: ";
+		std::cin >> operation;
+		list = pushFront(list, operation);
+		printList(list);
+		break;
+	case 2:
+		deleteEnd(list);
+		printList(list);
+		break;
+	case 3:
+		std::cout << "Value: ";
+		std::cin >> operation;
+		std::cout << findInList(list, operation) << std::endl;
+		break;
+	case 4:
+		deleteList(list);
+		return 0;
+		break;
+	default:
+		deleteList(list);
+		return 0;
+		break;
 	}
 
-	std::cout << findInList(list, 5125) << std::endl;
-	deleteList(list);
-
-	return 0;
 }
