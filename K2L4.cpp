@@ -109,38 +109,43 @@ int main()
 {
 	listEntry* list = createList(LIST_SIZE);
 
-	
-	
 	printList(list);
 
 	int operation = -1;
-	std::cout << "Choose operation:\n 1)pushFront\n 2)deleteEnd\n 3)findValue\n 4)exit\n";
-	std::cin >> operation;
-	switch (operation)
+	while (true)
 	{
-	case 1:
-		std::cout << "Value: ";
+		std::cout << "Choose operation:\n 1)create\n 2)print\n 3)pushFront\n 4)deleteEnd\n 5)findValue\n 6)delete\n 7)exit\n";
 		std::cin >> operation;
-		list = pushFront(list, operation);
-		printList(list);
-		break;
-	case 2:
-		deleteEnd(list);
-		printList(list);
-		break;
-	case 3:
-		std::cout << "Value: ";
-		std::cin >> operation;
-		std::cout << findInList(list, operation) << std::endl;
-		break;
-	case 4:
-		deleteList(list);
-		return 0;
-		break;
-	default:
-		deleteList(list);
-		return 0;
-		break;
+		switch (operation)
+		{
+		case 1:
+			deleteEnd(list);
+			std::cout << "Value: ";
+			std::cin >> operation;
+			createList(operation);
+		case 2:
+			printList(list);
+			break;
+		case 3:
+			std::cout << "Value: ";
+			std::cin >> operation;
+			list = pushFront(list, operation);
+			break;
+		case 4:
+			deleteEnd(list);
+			printList(list);
+			break;
+		case 5:
+			std::cout << "Value: ";
+			std::cin >> operation;
+			std::cout << findInList(list, operation) << std::endl;
+			break;
+		case 6:
+			deleteList(list);
+			return 0;
+			break;
+		default:
+			break;
+		}
 	}
-
 }
