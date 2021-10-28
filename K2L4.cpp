@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 const int LIST_SIZE = 30;
 
@@ -65,13 +66,22 @@ void deleteList(listEntry* list) {
 	}
 }
 
-void printList(listEntry* list) {
+void printList(listEntry* list, std::string fname = "0") {
 	int i = 0;
 	listEntry* current = list;
+	std::ofstream file;
+	bool empty = ((fname.compare("0")) == 0);
+	if (!empty)
+		file.open(fname);
+
+	std::ostream& output = !empty ? file : std::cout;
 	while (current != NULL) {
-		std::cout << i << ": " << current->value << std::endl;
+		output << i << ": " << current->value << std::endl;
 		current = current->next;
 		i++;
+	}
+	if (!empty) {
+		file.close();
 	}
 }
 
@@ -79,7 +89,7 @@ int main() {
 	listEntry* list = createList(LIST_SIZE);
 
 	printList(list);
-
+	std::string fname;
 	int operation = -1;
 	while (true) {
 		std::cout << "Choose operation:\n 1)create\n 2)print\n 3)pushFront\n 4)deleteEnd\n 5)findValue\n 6)delete\n 7)exit\n";
@@ -87,11 +97,13 @@ int main() {
 		switch (operation) {
 		case 1:
 			deleteList(list);
-			std::cout << "Value: ";
+			std::cout << "New size: ";
 			std::cin >> operation;
 			list = createList(operation);
 		case 2:
-			printList(list);
+			std::cout << "Filename (0 for console): ";
+			std::cin >> fname;
+			printList(list, fname);
 			break;
 		case 3:
 			std::cout << "Value: ";
