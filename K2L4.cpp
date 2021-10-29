@@ -76,7 +76,7 @@ void printList(listEntry* list, std::string fname = "0") {
 	std::ostream& output = !empty ? file : std::cout;
 	int i = 0;
 	while (current != NULL) {
-		std::cout << i << ": " << current->value << std::endl;
+		output << i << ": " << current->value << std::endl;
 		current = current->next;
 		i++;
 	}
