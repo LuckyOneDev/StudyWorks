@@ -75,15 +75,10 @@ void printList(listEntry* list, std::string fname = "0") {
 
 	std::ostream& output = !empty ? file : std::cout;
 
-	output << "[";
-	if (current != NULL) {
-		while (current->next != NULL) {
-			output << current->value << ", ";
-			current = current->next;
-		}
-		output << current->value << "]\n";
-	} else {
-		output << "]\n";
+	while (current != NULL) {
+		std::cout << i << ": " << current->value << std::endl;
+		current = current->next;
+		i++;
 	}
 
 	if (!empty) {
