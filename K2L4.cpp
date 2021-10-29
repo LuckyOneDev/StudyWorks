@@ -13,9 +13,9 @@ listEntry* createList(int size) {
 	listEntry* first = new listEntry;
 
 	listEntry* current = first;
-	for (int i = 0; i < size; i++) {
+	for (int i = 1; i < size; i++) {
 		listEntry* next = new listEntry;
-		next->value = i + 1;
+		next->value = i;
 		current->next = next;
 		current = next;
 	}
@@ -67,7 +67,6 @@ void deleteList(listEntry* list) {
 }
 
 void printList(listEntry* list, std::string fname = "0") {
-	int i = 0;
 	listEntry* current = list;
 	std::ofstream file;
 	bool empty = ((fname.compare("0")) == 0);
@@ -75,11 +74,18 @@ void printList(listEntry* list, std::string fname = "0") {
 		file.open(fname);
 
 	std::ostream& output = !empty ? file : std::cout;
-	while (current != NULL) {
-		output << i << ": " << current->value << std::endl;
-		current = current->next;
-		i++;
+
+	output << "[";
+	if (current != NULL) {
+		while (current->next != NULL) {
+			output << current->value << ", ";
+			current = current->next;
+		}
+		output << current->value << "]\n";
+	} else {
+		output << "]\n";
 	}
+
 	if (!empty) {
 		file.close();
 	}
@@ -100,6 +106,7 @@ int main() {
 			std::cout << "New size: ";
 			std::cin >> operation;
 			list = createList(operation);
+			break;
 		case 2:
 			std::cout << "Filename (0 for console): ";
 			std::cin >> fname;
