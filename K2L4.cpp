@@ -86,6 +86,28 @@ void printList(listEntry* list, std::string fname = "0") {
 	}
 }
 
+void removeByKey(listEntry* list, int key) {
+	listEntry* current = list;
+	listEntry* prev = NULL;
+	while (current != NULL) {
+		if (current->value == key) {
+			if (prev != NULL) {
+				prev->next = current->next;
+				delete current;
+				current = prev->next;
+			} else {
+				listEntry* next = current->next;
+				delete current;
+				current = next;
+			}
+			continue;
+		}
+		prev = current;
+		current = current->next;
+	}
+}
+
+
 int main() {
 	listEntry* list = createList(LIST_SIZE);
 
@@ -93,7 +115,7 @@ int main() {
 	std::string fname;
 	int operation = -1;
 	while (true) {
-		std::cout << "Choose operation:\n 1)create\n 2)print\n 3)pushFront\n 4)deleteEnd\n 5)findValue\n 6)delete\n 7)exit\n";
+		std::cout << "Choose operation:\n 1)create\n 2)print\n 3)pushFront\n 4)deleteEnd\n 5)findValue\n 6)delete\n 7)remByK\n 8)exit\n";
 		std::cin >> operation;
 		switch (operation) {
 		case 1:
@@ -125,6 +147,11 @@ int main() {
 			list = NULL;
 			break;
 		case 7:
+			std::cout << "Value: ";
+			std::cin >> operation;
+			removeByKey(list, operation);
+			break;
+		case 8:
 			deleteList(list);
 			list = NULL;
 			return 0;
