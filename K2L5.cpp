@@ -72,23 +72,23 @@ void printGraph(edge* graph, int size) {
     }
 }
 
-void bellman_ford(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
+void bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
 {
     std::cout << "\nSource:" << sourceVertex << std::endl;
     int from, to, weight = 0;
-    int* distances = new int[verticeCount];
+    int* shortest = new int[verticeCount];
 
-    /* initializing array 'dis' with 999. 999 denotes infinite distance */
+    // Для всех вершин устанавливаем inf
     for (int i = 0; i < verticeCount; i++)
     {
-        distances[i] = INT_MAX;
+        shortest[i] = INT_MAX;
     }
 
     /* distance of source vertex from source vertex is o */
-    distances[sourceVertex] = 0;
+    shortest[sourceVertex] = 0;
 
     /* relaxing all the edges verticeCount - 1 times */
-    for (int i = 0; i < verticeCount - 1; i++)
+    for (int i = i; i < verticeCount - 1; i++)
     {
         for (int j = 0; j < edgeCount - 1; j++)
         {
@@ -96,19 +96,19 @@ void bellman_ford(edge* graph, int sourceVertex, int edgeCount, int verticeCount
             to = graph[j].dest;
             weight = graph[j].weight;
 
-            if (distances[from] != INT_MAX && distances[from] + weight < distances[to])
+            if (shortest[from] != INT_MAX && shortest[from] + weight < shortest[to])
             {
-                distances[to] = distances[from] + weight;
+                shortest[to] = shortest[from] + weight;
             }
 
             std::cout << "\nVertex" << "\tDistance";
             for (int i = 0; i < verticeCount; i++)
             {
-                if (distances[i] == INT_MAX) {
+                if (shortest[i] == INT_MAX) {
                     std::cout << "\n" << i << "\t" << "INF";
                 }
                 else {
-                    std::cout << "\n" << i << "\t" << distances[i];
+                    std::cout << "\n" << i << "\t" << shortest[i];
                 }
 
             }
@@ -120,80 +120,54 @@ void bellman_ford(edge* graph, int sourceVertex, int edgeCount, int verticeCount
 
 
 
-//Helper. Returns -1 if edge doesnt exist
+//Helper. Returns INT_MAX if edge doesnt exist
 int edgeWeight(int from, int to, edge* graph, int gSize) {
     for (int i = 0; i < gSize; i++) {
         if (graph[i].src == from && graph[i].dest == to) {
             return graph[i].weight;
         }
     }
-
-    return -1;
+    return INT_MAX;
 }
 
-// Function to find the vertex with minimum key value 
-int min_Key(int key[], bool visited[], int verticeCount)
-{
-    int min = INT_MAX, min_index;
-
-    for (int v = 0; v < verticeCount; v++) {
-        if (visited[v] == false && key[v] < min) {
-            // vertex should not be visited
-            min = key[v];
-            min_index = v;
-        }
-    }
-    return min_index;
-}
-
-void printMST(int* edges, int vCount, edge* graph, int gSize) {
-    std::cout << "MST Edges:\n";
-    for (int i = 0; i < vCount; i++) {
-        if (edges[i] != -1) std::cout << i << "-(" << edgeWeight(i, edges[i], graph, gSize) << ")->" << edges[i] << std::endl;
-    }
-
-}
-
-void Prims_MST(edge* graph, int graphSize, int verticeCount)
+void primMST(edge* graph, int graphSize, int verticeCount, int& treeSize)
 {  
-    int* edges = new int[verticeCount];
-    int* key = new int[verticeCount];
-    bool* visited = new bool[verticeCount];
+    bool* chosenVertices = new bool[verticeCount];
+    edge* chosenEdges = new edge[graphSize];
+    treeSize = 0;
+    memset(chosenVertices, false, verticeCount);
+    chosenVertices[0] = true; // Добавляем вершину 0 как корень
+    
+    for (int i = 0; i < verticeCount - 1; i++) {
+        // Определить веса между всеми выбранными вершинами и  остальными невыбранными вершинами
+        // И выбрать наименьший вес
+        for (int j = 0; j < verticeCount; j++) {
+            int min = INT_MAX;
+            int minVertice;
+            //Если вершина в дереве
+            if (chosenVertices[j]) {
+                //Перебираем все возможные связи
+                for (int k = 0; k < verticeCount; k++)
+                {
+                    if (!chosenVertices[k] && edgeWeight(j, k, graph, graphSize) != INT_MAX && edgeWeight(j, k, graph, graphSize) < min) {
+                        min = edgeWeight(j, k, graph, graphSize);
+                        minVertice = k;
+                    }
+                }
 
-    // Initialize all the arrays 
-    for (int i = 0; i< verticeCount; i++) {
-        key[i] = INT_MAX;
-        visited[i] = false;
-        edges[i] = -1;
-    }    
+                if (min != INT_MAX) {
+                    // Добавить вершину к выбранным
+                    chosenVertices[minVertice] = true;
+                    chosenEdges[treeSize] = edge{ j, minVertice, min };
+                    treeSize++;
+                    printGraph(chosenEdges, treeSize);
+                    std::cout << std::endl;
+                }
 
-    key[0] = 0;  // Include first vertex in MST by setting its key vaue to 0.  
-    edges[0] = -1; // First node is always root of MST  
+            }
 
-    // The MST will have maximum V-1 vertices  
-    for (int x = 0; x < verticeCount - 1; x++)
-    {  
-        // Finding the minimum key vertex from the 
-        //set of vertices not yet included in MST  
-        int u = min_Key(key, visited, verticeCount);
-
-        visited[u] = true;  // Add the minimum key vertex to the MST  
-
-        // Update key and parent arrays
-        for (int v = 0; v < verticeCount; v++)
-        {
-            // cost[u][v] is non zero only for adjacent vertices of u  
-            // visited[v] is false for vertices not yet included in MST  
-            // key[] gets updated only if cost[u][v] is smaller than key[v]  
-            if (edgeWeight(u,v,graph,graphSize) >= 0 && visited[v] == false && edgeWeight(u, v, graph, graphSize) < key[v])
-            {  
-                edges[v] = u;
-                key[v] = edgeWeight(u, v, graph, graphSize);
-            }        
         }
-        printMST(edges, verticeCount, graph, graphSize);
     }
-
 }  
 
 
@@ -206,12 +180,13 @@ int main()
     edge* graph = readGraph(fname, size, vertcount);
     std::cout << "Graph:" << std::endl;
     printGraph(graph, size);
-    bellman_ford(graph, 0, size, vertcount);
+    bellmanFord(graph, 0, size, vertcount);
     std::cout << '\n';
     std::cout << std::endl;
 
     edge* ugraph = makeUnoriented(graph, size);
-    Prims_MST(ugraph, size, vertcount);
+    int usize;
+    primMST(ugraph, size, vertcount, usize);
 
     return 0;
 }
