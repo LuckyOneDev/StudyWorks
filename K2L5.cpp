@@ -92,9 +92,9 @@ int* bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
   memset(pred, 0, edgeCount);
 
   // Релаксация verticeCount - 1 раз
-  for (int i = 0; i < verticeCount - 1; i++) {
+  for (int i = 0; i < verticeCount; i++) {
     // Для каждого ребра
-    for (int j = 0; j < edgeCount - 1; j++) {
+    for (int j = 0; j < edgeCount; j++) {
       from = graph[j].src;
       to = graph[j].dest;
       weight = graph[j].weight;
