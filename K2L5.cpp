@@ -72,12 +72,20 @@ void printGraph(edge* graph, int size) {
     }
 }
 
-void bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
+void printBF(int* pred, int size) {
+    std::cout << "\n\nBF: " << std::endl;
+    for (int i = 0; i < size; i++) {
+        std::cout << pred[i] << '-' << i << std::endl;
+    }
+}
+
+int* bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
 {
     std::cout << "\nSource:" << sourceVertex << std::endl;
     int from, to, weight = 0;
     int* shortest = new int[verticeCount];
-
+    int* pred = new int[edgeCount];
+    
     // Для всех вершин устанавливаем inf
     for (int i = 0; i < verticeCount; i++)
     {
@@ -86,6 +94,7 @@ void bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
 
     // Расстояние от корня до него же 0
     shortest[sourceVertex] = 0;
+    memset(pred, 0, edgeCount);
 
     // Релаксация verticeCount - 1 раз
     for (int i = 0; i < verticeCount - 1; i++)
@@ -101,24 +110,25 @@ void bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
             if (shortest[from] != INT_MAX && shortest[from] + weight < shortest[to])
             {
                 shortest[to] = shortest[from] + weight;
-            }
-
-            //Выводим верлшины
-            std::cout << "\nVertex" << "\tDistance";
-            for (int i = 0; i < verticeCount; i++)
-            {
-                if (shortest[i] == INT_MAX) {
-                    std::cout << "\n" << i << "\t" << "INF";
-                }
-                else {
-                    std::cout << "\n" << i << "\t" << shortest[i];
-                }
-
+                pred[to] = from;
             }
         }
+
+        //Выводим верлшины
+        std::cout << "\nVertex" << "\tDistance";
+        for (int i = 0; i < verticeCount; i++)
+        {
+            if (shortest[i] == INT_MAX) {
+                std::cout << "\n" << i << "\t" << "INF";
+            }
+            else {
+                std::cout << "\n" << i << "\t" << shortest[i];
+            }
+
+        }
     }
-
-
+    printBF(pred, edgeCount);
+    return pred;
 }
 
 
