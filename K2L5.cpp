@@ -84,23 +84,26 @@ void bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
         shortest[i] = INT_MAX;
     }
 
-    /* distance of source vertex from source vertex is o */
+    // Расстояние от корня до него же 0
     shortest[sourceVertex] = 0;
 
-    /* relaxing all the edges verticeCount - 1 times */
-    for (int i = i; i < verticeCount - 1; i++)
+    // Релаксация verticeCount - 1 раз
+    for (int i = 0; i < verticeCount - 1; i++)
     {
+        // Для каждого ребра
         for (int j = 0; j < edgeCount - 1; j++)
         {
             from = graph[j].src;
             to = graph[j].dest;
             weight = graph[j].weight;
 
+            //Производим релаксацию
             if (shortest[from] != INT_MAX && shortest[from] + weight < shortest[to])
             {
                 shortest[to] = shortest[from] + weight;
             }
 
+            //Выводим верлшины
             std::cout << "\nVertex" << "\tDistance";
             for (int i = 0; i < verticeCount; i++)
             {
