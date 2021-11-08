@@ -85,14 +85,14 @@ int* bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
   // Для всех вершин устанавливаем inf
   for (int i = 0; i < verticeCount; i++) {
     shortest[i] = INT_MAX;
+    pred[i] = -1;
   }
 
   // Расстояние от корня до него же 0
   shortest[sourceVertex] = 0;
-  memset(pred, 0, edgeCount);
 
   // Релаксация verticeCount - 1 раз
-  for (int i = 0; i < verticeCount; i++) {
+  for (int i = 0; i < verticeCount - 1; i++) {
     // Для каждого ребра
     for (int j = 0; j < edgeCount; j++) {
       from = graph[j].src;
@@ -107,13 +107,15 @@ int* bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
     }
 
     //Выводим верлшины
-    std::cout << "\nVertex" << "\tDistance";
+    std::cout << "\nVert" << "\tDist" << "\tPred";
     for (int i = 0; i < verticeCount; i++) {
+      std::cout << "\n" << i << "\t";
       if (shortest[i] == INT_MAX) {
-        std::cout << "\n" << i << "\t" << "INF";
+        std::cout << "INF";
       } else {
-        std::cout << "\n" << i << "\t" << shortest[i];
+        std::cout << shortest[i];
       }
+      std::cout << '\t' << pred[i];
     }
   }
   printBF(pred, verticeCount);
