@@ -31,6 +31,7 @@ struct edge {
     int weight;
 };
 
+//Считывает граф из файла и определяет количество граней и вершин
 edge* readGraph(char* filename, int& size, int& vertCount) {
     std::fstream file(filename);
     file >> size >> vertCount;
@@ -46,6 +47,7 @@ edge* readGraph(char* filename, int& size, int& vertCount) {
     return graph;
 }
 
+// Делает граф неориентированным. Веса усредняются
 edge* makeUnoriented(edge* graph, int& size) {
     edge* unoriented = new edge[2 * size];
     std::copy(graph, graph + size, unoriented);
@@ -69,6 +71,7 @@ edge* makeUnoriented(edge* graph, int& size) {
     return unoriented;
 }
 
+// Выводит граф в консоль
 void printGraph(edge* graph, int size) {
     for (int i = 0; i < size; i++) {
         std::cout << graph[i].src << "-(" << graph[i].weight << ")->" << graph[i].dest << std::endl;
@@ -83,6 +86,7 @@ void printBF(int* pred, int size) {
     }
 }
 
+// Обрабатывает граф алгоритмом Беллмана-Форда
 int* bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount) {
     std::cout << "\nSource vertice:" << sourceVertex << std::endl;
     int from, to, weight = 0;
@@ -130,7 +134,7 @@ int* bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount)
     return pred;
 }
 
-//Helper. Returns INT_MAX if edge doesnt exist
+//Получает вес ребра from-to. Возвращает INT_MAX если ребра нет
 int edgeWeight(int from, int to, edge* graph, int gSize) {
     for (int i = 0; i < gSize; i++) {
         if (graph[i].src == from && graph[i].dest == to) {
@@ -140,6 +144,7 @@ int edgeWeight(int from, int to, edge* graph, int gSize) {
     return INT_MAX;
 }
 
+// Обрабатывает граф алгоритмом прима. Печатает полученное дерево.
 void primMST(edge* graph, int graphSize, int verticeCount, int& treeSize) {
     bool* chosenVertices = new bool[verticeCount];
     edge* chosenEdges = new edge[graphSize];
