@@ -69,15 +69,16 @@ void printGraph(edge* graph, int size) {
     }
 }
 
+// Вывод резульата работы bellmanFord
 void printBF(int* pred, int size) {
-    std::cout << "\n\nBF: " << std::endl;
+    std::cout << "\n\nShortest path: " << std::endl;
     for (int i = 0; i < size; i++) {
         std::cout << pred[i] << '-' << i << std::endl;
     }
 }
 
 int* bellmanFord(edge* graph, int sourceVertex, int edgeCount, int verticeCount) {
-    std::cout << "\nSource:" << sourceVertex << std::endl;
+    std::cout << "\nSource vertice:" << sourceVertex << std::endl;
     int from, to, weight = 0;
     int* shortest = new int[verticeCount];
     int* pred = new int[verticeCount];
@@ -147,7 +148,7 @@ void primMST(edge* graph, int graphSize, int verticeCount, int& treeSize) {
         int minVertice;
         int from;
         for (int j = 0; j < verticeCount; j++) {
-            
+
             //Если вершина в дереве
             if (chosenVertices[j]) {
                 //Перебираем все возможные связи
@@ -177,12 +178,13 @@ int main() {
     std::cout << "Input filename: ";
     std::cin >> fname;
     edge* graph = readGraph(fname, size, vertcount);
-    std::cout << "Graph:" << std::endl;
+    std::cout << "Readed graph:" << std::endl;
     printGraph(graph, size);
     bellmanFord(graph, 0, size, vertcount);
     std::cout << '\n';
     std::cout << std::endl;
 
+    std::cout << "Minimum spanning tree:" << std::endl;
     edge* ugraph = makeUnoriented(graph, size);
     int usize;
     primMST(ugraph, size, vertcount, usize);
