@@ -1,14 +1,20 @@
 /*
 Example input:
-8 5
-0 1 2
-0 2 3
-1 4 4
-2 3 3
-3 2 1
-3 1 4
-4 5 3
-4 1 0
+13 10
+0 -1 1
+1 1 2
+2 2 3
+3 4 4
+4 9 5
+5 1 6
+6 3 7
+7 5 8
+8 2 0
+0 6 9
+9 1 7
+9 5 3
+2 0 6
+8 -4 4
 ------
 entry_count,
 vertice_count (vmax+1),
@@ -178,7 +184,7 @@ int main() {
     std::cout << "Input filename: ";
     std::cin >> fname;
     edge* graph = readGraph(fname, size, vertcount);
-    std::cout << "Readed graph:" << std::endl;
+    std::cout << "Read graph:" << std::endl;
     printGraph(graph, size);
     bellmanFord(graph, 0, size, vertcount);
     std::cout << '\n';
