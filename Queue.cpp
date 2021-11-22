@@ -1,143 +1,156 @@
 // Структуры ЛР-2
 // 2 вариант
-// Циклический список. Символьный. выборка из очереди элемента с минимальным значением приоритета. Совпадение приоритетов разрешено.
+// Циклический список. Символьный. выборка из очереди элемента с заданным значением приоритета.
 #include <iostream>
 
-struct ListEntry {
-    char val;
-    ListEntry* next;
-    int priority;
+const int QSIZE = 5;
+
+struct QItem {
+	char value;
+	int priority;
 };
 
-ListEntry* generateRandomQueue(int size) {
-    
-    ListEntry* previous = new ListEntry;
-    ListEntry* first = previous;
-    for (size_t i = 0; i < size; i++)
-    {
-        ListEntry* current = new ListEntry;
-        current->val = (char)(97 + rand() % 25);
-        current->priority = rand();
-        previous->next = current;
-        previous = current;
-    }
+struct Queue {
+	QItem** values;					// queue container
+	int rear;                  // index of first element
+	int front;                   // index of last element
+	int count;          // number of elements currently in queue
+	int size; 
+};
 
-    previous->next = first;
-    first->val = (char)(97 + rand() % 25);
-    first->priority = rand();
+void initQueue(Queue* queue, int size) {
+	queue->rear = 0;
+	queue->front = size;
+	queue->count = 0;
+	queue->size = size;
+	queue->values = new QItem*[size];
 
-    return first;
+	for (size_t i = 0; i < size; i++)
+		queue->values[i] = NULL;
 }
 
-void printQueue(ListEntry* begin, int size) {
-    for (size_t i = 0; i < size; i++)
-    {
-        std::cout << '[' << i << "] " << begin->val << " : " << begin->priority << std::endl;
-        begin = begin->next;
-    }
+void printQueue(Queue* queue) {
+	if (queue->size == 0) {
+		std::cout << "Queue is not created" << std::endl;
+		return;
+	}
+
+	std::cout << "\nQueue:\n";
+	for (size_t i = 0; i < queue->size; i++)
+	{
+		if (queue->values[i] != NULL) {
+				std::cout << "[" << i << "] " << queue->values[i]->value << " : " << queue->values[i]->priority << std::endl;
+		}
+		else {
+				std::cout << "[" << i << "] NULL" << std::endl;
+		}
+	}
+	
 }
 
-char getMin(ListEntry*& begin, int size) {
-    // Finding min
-    int minPriority = begin->priority;
-    ListEntry* min = begin;
-    ListEntry* preMin = NULL;
-
-    ListEntry* pre;
-    ListEntry* cur = begin;
-    for (size_t i = 0; i < size; i++)
-    {
-        if (cur->priority < minPriority)
-        {
-            minPriority = cur->priority;
-            min = cur;
-        }
-        cur = cur->next;
-        preMin = begin;
-    }// Min found
-
-    char v = min->val;
-
-    if (begin == min) {
-        begin = begin->next;
-    }
-    else {
-        preMin->next = min->next;
-    }
-
-    return v;
+void insertQueue(Queue* queue, char val, int priority ) {
+	if (queue->size == 0) {
+		std::cout << "Queue is not created" << std::endl;
+		return;
+	}
+	if (queue->count == queue->size) {
+		std::cout << "Queue overflow!" << std::endl;
+	}
+	QItem* item = new QItem;
+	item->value = val;
+	item->priority = priority;
+	queue->values[queue->rear] = item;
+	queue->rear = (queue->rear + 1) % queue->size;
+	queue->count++;
 }
 
-void addElement(ListEntry*& begin, char elem, int priority) {
-    ListEntry* newElem = new ListEntry;
-    newElem->next = begin;
-    newElem->priority = priority;
-    newElem->val = elem;
-
-    begin = newElem;
+void clearQueue(Queue* queue) {
+	if (queue->size != 0) {
+		queue->rear = 0;
+		queue->front = 0;
+		queue->count = 0;
+		queue->size = 0;
+		delete queue->values;
+	}
 }
 
-void clearQueue(ListEntry*& begin, int size) {
-    for (size_t i = 0; i < size; i++)
-    {
-        ListEntry* buf = begin;
-        begin = begin->next;
-        delete buf;
-    }
+QItem* getElementByPriority(Queue* queue, int priority) 
+{
+	if (queue->count == 0) {
+		std::cout << "Empty queue!" << std::endl;
+		return NULL;
+	}
+	else {
+		for (size_t i = 0; i < queue->size; i++)
+		{
+			if (queue->values[i]->priority == priority) {
+				QItem* val = queue->values[i];
+				queue->values[i] = NULL;
+				queue->count--;
+				return val;
+			}
+		}
+		return NULL;
+	}
 
-    begin = NULL;
 }
+
 
 int main()
 {
-    srand(124);
-    
-    int listSize = 0;
-    ListEntry* list = generateRandomQueue(15);
-    
-    while (true) {
-        int input;
-        std::cout << "0) Exit" << std::endl;
-        std::cout << "1) Create Queue" << std::endl;
-        std::cout << "2) Print Queue" << std::endl;
-        std::cout << "3) Add element" << std::endl;
-        std::cout << "4) Clear Queue" << std::endl;
-        std::cout << "5) Get min" << std::endl;
+	srand(124);
+	Queue* queue = new Queue;
+	queue->size = 0;
 
-        std::cin >> input;
+	while (true) {
+		int input;
+		std::cout << "0) Exit" << std::endl;
+		std::cout << "1) Create Queue" << std::endl;
+		std::cout << "2) Print Queue" << std::endl;
+		std::cout << "3) Add element" << std::endl;
+		std::cout << "4) Clear Queue" << std::endl;
+		std::cout << "5) Get by priority" << std::endl;
 
-        switch (input)
-        {
-        case 0:
-            return 0;
-            break;
-        case 1:
-            std::cout << "Size: ";
-            std::cin >> listSize;
-            list = generateRandomQueue(listSize);
-            break;
-        case 2:
-            printQueue(list, listSize);
-            break;
-        case 3:
-            std::cout << "Value: ";
-            char character;
-            std::cin >> character;
-            std::cout << std::endl;
-            std::cout << "Priority: ";
-            int priority;
-            std::cin >> priority;
-            addElement(list, character, priority);
-            listSize++;
-            break;
-        case 4:
-            clearQueue(list, listSize);
-            listSize = 0;
-            break;
-        case 5:
-            std::cout << "Min: " << getMin(list, listSize) << std::endl;
-            listSize--;
-            break;
-        }
-    }
+		std::cin >> input;
+
+		switch (input)
+		{
+		case 0:
+			return 0;
+			break;
+		case 1:
+			std::cout << "Size: ";
+			std::cin >> input;
+			initQueue(queue, input);
+			break;
+		case 2:
+			printQueue(queue);
+			break;
+		case 3:
+			std::cout << "Value: ";
+			char character;
+			std::cin >> character;
+			std::cout << std::endl;
+			std::cout << "Priority: ";
+			int priority;
+			std::cin >> priority;
+			insertQueue(queue, character, priority);
+			break;
+		case 4:
+			clearQueue(queue);
+			break;
+		case 5:
+			std::cout << "Priority: ";
+			std::cin >> input;
+			auto result = getElementByPriority(queue, input);
+			if (result != NULL) {
+				std::cout << "Value: " << result->value << std::endl;
+			}
+			else {
+				std::cout << "Value not found"  << std::endl;
+			}
+			
+			break;
+		}
+	}
 }
