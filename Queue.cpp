@@ -3,8 +3,6 @@
 // Циклический список. Символьный. выборка из очереди элемента с заданным значением приоритета.
 #include <iostream>
 
-const int QSIZE = 5;
-
 struct QItem {
 	char value;
 	int priority;
@@ -70,6 +68,7 @@ void clearQueue(Queue* queue) {
 		queue->front = 0;
 		queue->count = 0;
 		queue->size = 0;
+		delete[] *(queue->values);
 		delete queue->values;
 	}
 }
@@ -80,18 +79,19 @@ QItem* getElementByPriority(Queue* queue, int priority)
 		std::cout << "Empty queue!" << std::endl;
 		return NULL;
 	}
-	else {
-		for (size_t i = 0; i < queue->size; i++)
-		{
-			if (queue->values[i]->priority == priority) {
-				QItem* val = queue->values[i];
-				queue->values[i] = NULL;
-				queue->count--;
-				return val;
-			}
+
+	for (size_t i = 0; i < queue->size; i++)
+	{
+		if (queue->values[i]->priority == priority) {
+			QItem* val = queue->values[i];
+			queue->values[i] = queue->values[queue->rear];
+			queue->values[queue->rear] = NULL;
+			queue->count--;
+			return val;
 		}
-		return NULL;
 	}
+	
+	return NULL;
 
 }
 
