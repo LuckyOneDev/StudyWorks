@@ -23,7 +23,7 @@ struct PQueue {
 // queue - указазатель на очередь
 // size = максимальный размер очереди
 void initPQueue(PQueue* queue, int size) {
-	queue->rear = 0;
+	queue->rear = -1;
 	queue->front = 0;
 	queue->count = 0;
 	queue->size = size;
@@ -78,10 +78,10 @@ void insertIntoPQueue(PQueue* queue, char val, int priority ) {
 	item->value = val;
 	item->priority = priority;
 
-	// Вставляем элемент в свободное место
-	queue->values[queue->rear] = item;
 	// Циклически сдвигаем индекс свободного места
 	queue->rear = (queue->rear + 1) % queue->size;
+	// Вставляем элемент в свободное место
+	queue->values[queue->rear] = item;
 	// Число элементов увеличивается на 1
 	queue->count++;
 }
@@ -112,7 +112,7 @@ PQItem* getElementByPriority(PQueue* queue, int priority)
 	}
 	
 	// Проходим по каждому элементу очереди от front до rear
-	for (size_t i = std::min(queue->front, queue->rear); i < std::max(queue->front, queue->rear); i++)
+	for (int i = queue->front; i != queue->rear; i = (i + 1) % queue->size)
 	{
 		// Если у элемента нужный приоритет
 		if (queue->values[i]->priority == priority) {
@@ -130,7 +130,6 @@ PQItem* getElementByPriority(PQueue* queue, int priority)
 			
 			// Циклически сдвигаем front
 			queue->front = (queue->front + 1) % queue->size;
-
 			return val;
 		}
 	}
