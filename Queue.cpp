@@ -110,18 +110,19 @@ PQItem* getElementByPriority(PQueue* queue, int priority)
 		return NULL;
 	}
 	
-	// Проходим по каждому элементу очереди
-	for (size_t i = 0; i < queue->size; i++)
+	// Проходим по каждому элементу очереди от front до rear
+	for (size_t i = queue->front; i < abs(queue->front - queue->rear); i++)
 	{
+		int index = i % queue->size;
 		// Если у элемента нужный приоритет
-		if (queue->values[i]->priority == priority) {
+		if (queue->values[index]->priority == priority) {
 			// Запоминаем значения нужного элемента
 			PQItem* val = new PQItem;
-			val->value = queue->values[i]->value;
-			val->priority = queue->values[i]->priority;
+			val->value = queue->values[index]->value;
+			val->priority = queue->values[index]->priority;
 
 			// Меняем местами с front элементом
-			queue->values[i] = queue->values[queue->front];
+			queue->values[index] = queue->values[queue->front];
 			// Устанавливаем front в NULL
 			queue->values[queue->front] = NULL;
 			// Число элементов уменьшается на 1
