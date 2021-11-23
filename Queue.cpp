@@ -18,7 +18,7 @@ struct Queue {
 
 void initQueue(Queue* queue, int size) {
 	queue->rear = 0;
-	queue->front = size;
+	queue->front = size - 1;
 	queue->count = 0;
 	queue->size = size;
 	queue->values = new QItem*[size];
@@ -84,9 +84,10 @@ QItem* getElementByPriority(Queue* queue, int priority)
 	{
 		if (queue->values[i]->priority == priority) {
 			QItem* val = queue->values[i];
-			queue->values[i] = queue->values[queue->rear];
-			queue->values[queue->rear] = NULL;
+			queue->values[i] = queue->values[queue->front];
+			queue->values[queue->front] = NULL;
 			queue->count--;
+			queue->front = (queue->front + 1) % queue->size;
 			return val;
 		}
 	}
