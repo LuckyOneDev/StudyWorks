@@ -2,6 +2,7 @@
 // 2 вариант
 // Циклический список. Символьный. выборка из очереди элемента с заданным значением приоритета.
 #include <iostream>
+#include <algorithm>
 
 // Структура представляет собой элемент очереди с приоритетом
 struct PQItem {
@@ -111,18 +112,17 @@ PQItem* getElementByPriority(PQueue* queue, int priority)
 	}
 	
 	// Проходим по каждому элементу очереди от front до rear
-	for (size_t i = queue->front; i < abs(queue->front - queue->rear); i++)
+	for (size_t i = std::min(queue->front, queue->rear); i < std::max(queue->front, queue->rear); i++)
 	{
-		int index = i % queue->size;
 		// Если у элемента нужный приоритет
-		if (queue->values[index]->priority == priority) {
+		if (queue->values[i]->priority == priority) {
 			// Запоминаем значения нужного элемента
 			PQItem* val = new PQItem;
-			val->value = queue->values[index]->value;
-			val->priority = queue->values[index]->priority;
+			val->value = queue->values[i]->value;
+			val->priority = queue->values[i]->priority;
 
 			// Меняем местами с front элементом
-			queue->values[index] = queue->values[queue->front];
+			queue->values[i] = queue->values[queue->front];
 			// Устанавливаем front в NULL
 			queue->values[queue->front] = NULL;
 			// Число элементов уменьшается на 1
