@@ -4,7 +4,7 @@
 1 а
 1 ж
 1 в
-1 г 
+1 г
 1 б
 1 к
 1 и
@@ -28,12 +28,13 @@ size = 8
    /   \
   в     к
  / \   / \
-б   г и   ш 
+б   г и   ш
 */
-
 
 #include <iostream>
 #include <windows.h>
+#include <algorithm>
+#undef max
 
 struct Node {
   Node(char val) {
@@ -45,7 +46,7 @@ struct Node {
 };
 
 bool isVowel(char c) {
-  return std::string("aeiouAEIOUауоеияюёэыАУОЕИЯЮЁЭЫ").find(c) != std::string::npos;
+  return std::string("ауоеияюёэыАУОЕИЯЮЁЭЫ").find(c) != std::string::npos;
 }
 
 Node* insert(Node* root, char val)
@@ -68,24 +69,18 @@ Node* search(Node* node, char k) {
 }
 
 void print_tree(Node* root, int depth = 0) {
-  depth++;
   std::cout << depth << " : '" << root->value << "' : " << root << std::endl;
+  depth++;
   if (root->l != nullptr) print_tree(root->l, depth);
   if (root->r != nullptr) print_tree(root->r, depth);
 }
 
-void get_height(Node* root, int& height) {
-  height++;
-  int bufl = height;
-  int bufr = height;
-  if (root->l != nullptr) {
-    get_height(root->l, bufl);
-    height = bufl;
-  }
-  if (root->r != nullptr) {
-    get_height(root->r, bufr);
-    height = bufr;
-  }
+int get_height(Node* root)
+{
+  if (!root) return 0;
+  int l = get_height(root->l);
+  int r = get_height(root->r);
+  return std::max(l, r) + 1;
 }
 
 void node_count(Node* root, int& count) {
@@ -138,8 +133,7 @@ int main()
       print_tree(root);
       break;
     case 4:
-      buf = -1;
-      get_height(root, buf);
+      buf = get_height(root) - 1;
       std::cout << "\nВысота дерева: " << buf << std::endl;
       break;
     case 5:
