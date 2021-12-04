@@ -52,7 +52,7 @@ bool isVowel(char c) {
 Node* insert(Node* root, char val)
 {
   if (root == nullptr) return new Node(val);
-  if ((int)root->value > (int)val)
+  if (root->value > val)
     root->l = insert(root->l, val);
   else
     root->r = insert(root->r, val);
@@ -69,31 +69,26 @@ Node* search(Node* node, char k) {
 }
 
 void print_tree(Node* root, int depth = 0) {
+  if (!root) return;
   std::cout << depth << " : '" << root->value << "' : " << root << std::endl;
   depth++;
-  if (root->l != nullptr) print_tree(root->l, depth);
-  if (root->r != nullptr) print_tree(root->r, depth);
+  print_tree(root->l, depth);
+  print_tree(root->r, depth);
 }
 
-int get_height(Node* root)
-{
+int get_height(Node* root) {
   if (!root) return 0;
-  int l = get_height(root->l);
-  int r = get_height(root->r);
-  return std::max(l, r) + 1;
+  return std::max(get_height(root->l), get_height(root->r)) + 1;
 }
 
-void node_count(Node* root, int& count) {
-  count++;
-  if (root->l != nullptr) node_count(root->l, count);
-  if (root->r != nullptr) node_count(root->r, count);
+int node_count(Node* root) {
+  if (!root) return 0;
+  return node_count(root->l) + node_count(root->r) + 1;
 }
 
-void vowel_count(Node* root, int& count) {
-  if (isVowel(root->value)) count++;
-
-  if (root->l != nullptr) vowel_count(root->l, count);
-  if (root->r != nullptr) vowel_count(root->r, count);
+int vowel_count(Node* root) {
+  if (!root) return 0;
+  return vowel_count(root->l) + vowel_count(root->r) + isVowel(root->value);
 }
 int main()
 {
@@ -133,18 +128,13 @@ int main()
       print_tree(root);
       break;
     case 4:
-      buf = get_height(root) - 1;
-      std::cout << "\nВысота дерева: " << buf << std::endl;
+      std::cout << "\nВысота дерева: " << get_height(root) - 1 << std::endl;
       break;
     case 5:
-      buf = 0;
-      node_count(root, buf);
-      std::cout << "\nКоличество узлов: " << buf << std::endl;
+      std::cout << "\nКоличество узлов: " << node_count(root) << std::endl;
       break;
     case 6:
-      buf = 0;
-      vowel_count(root, buf);
-      std::cout << "\nКоличество гласных: " << buf << std::endl;
+      std::cout << "\nКоличество гласных: " << vowel_count(root) << std::endl;
       break;
     }
   }
