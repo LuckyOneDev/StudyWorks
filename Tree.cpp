@@ -1,4 +1,3 @@
-// Первый драфт. Дерево балансируется по ASCII коду вставляемого значения. Функции вроде работают
 /*
 абвгдеёжзийклмнуфхцчшщъыьэюя
 1 а
@@ -9,19 +8,14 @@
 1 к
 1 и
 1 ш
-
 2 и
-
 3
-
 4
 5
 6
-
 height = 3
 vowels = 2
 size = 8
-
    а
     \
      ж
@@ -36,6 +30,8 @@ size = 8
 #include <algorithm>
 #undef max
 
+// Узел бинарного дерева
+// Содержит значение и 2 потомка
 struct Node {
   Node(char val) {
     value = val;
@@ -45,13 +41,20 @@ struct Node {
   Node* r = nullptr;
 };
 
+//Проверяет является ли символ гласной русского языка
 bool isVowel(char c) {
   return std::string("ауоеияюёэыАУОЕИЯЮЁЭЫ").find(c) != std::string::npos;
 }
 
+//Вставляет новое значение в дерево
+//root - корень дерева
+//val - значение
 Node* insert(Node* root, char val)
 {
+  //Если дерево пустое, создаём его
   if (root == nullptr) return new Node(val);
+
+  //Если больше вставляем справа, меньше - слева
   if (root->value > val)
     root->l = insert(root->l, val);
   else
@@ -59,6 +62,10 @@ Node* insert(Node* root, char val)
   return root;
 }
 
+//Ищет значение в дереве.
+//root - корень дерева
+//k - значение
+//Возвращает указатель на найденное значение
 Node* search(Node* node, char k) {
   if (!node) return 0; // пустое дерево
   if (k == node->value)
@@ -68,35 +75,49 @@ Node* search(Node* node, char k) {
   return search(node->r, k);
 }
 
+//Выводит дерево на печать
+//root - корень дерева
 void print_tree(Node* root, int depth = 0) {
+  //Если узла не существует, завершаем
   if (!root) return;
   std::cout << depth << " : '" << root->value << "' : " << root << std::endl;
+  //Увеличиваем глубину
   depth++;
+  //Выводим левого и правого потомка
   print_tree(root->l, depth);
   print_tree(root->r, depth);
 }
 
+//Возвращает высоту дерева
 int get_height(Node* root) {
+  //Если узла не существует, завершаем
   if (!root) return 0;
   return std::max(get_height(root->l), get_height(root->r)) + 1;
 }
 
+//Возвращает количество узлов
 int node_count(Node* root) {
+  //Если узла не существует, завершаем
   if (!root) return 0;
   return node_count(root->l) + node_count(root->r) + 1;
 }
 
+//Возвращает количество гласных
 int vowel_count(Node* root) {
+  //Если узла не существует, завершаем
   if (!root) return 0;
   return vowel_count(root->l) + vowel_count(root->r) + isVowel(root->value);
 }
 int main()
 {
+  //Устанавливаем русский язык
   SetConsoleCP(1251);
   SetConsoleOutputCP(1251);
 
+  //Создание переменной под дерево
   Node* root = nullptr;
 
+  //Цикл ввода
   while (true)
   {
     std::cout << "\n0) Выйти из программы\n";
