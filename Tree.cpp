@@ -9,10 +9,13 @@
 1 и
 1 ш
 2 и
+
 3
+
 4
 5
 6
+
 height = 3
 vowels = 2
 size = 8
@@ -28,6 +31,7 @@ size = 8
 #include <iostream>
 #include <windows.h>
 #include <algorithm>
+#include <string>
 #undef max
 
 // Узел бинарного дерева
@@ -108,6 +112,7 @@ int vowel_count(Node* root) {
   if (!root) return 0;
   return vowel_count(root->l) + vowel_count(root->r) + isVowel(root->value);
 }
+
 int main()
 {
   //Устанавливаем русский язык
