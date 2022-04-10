@@ -1,8 +1,4 @@
-module summator #(parameter reglength = 3, parameter r1val = 0, parameter r2val = 0)(input wire clk);
-	reg[reglength-1:0] r1 = r1val;
-	reg[reglength-1:0] r2 = r2val;
-	
-	reg[reglength:0] summa = 0;
+module summator #(parameter reglength = 3)(input reg[reglength-1:0] r1, r2, input wire clk, output reg[reglength:0] summa);
 	reg carry = 0;
 
 	wire sum_wire;
