@@ -1,0 +1,121 @@
+#! /c/Source/iverilog-install/bin/vvp
+:ivl_version "12.0 (devel)" "(s20150603-1110-g18392a46)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "C:\iverilog\lib\ivl\system.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_sys.vpi";
+:vpi_module "C:\iverilog\lib\ivl\vhdl_textio.vpi";
+:vpi_module "C:\iverilog\lib\ivl\v2005_math.vpi";
+:vpi_module "C:\iverilog\lib\ivl\va_math.vpi";
+S_00000147afb288e0 .scope module, "SumTB" "SumTB" 2 1;
+ .timescale 0 0;
+P_00000147afb02e90 .param/l "r1" 0 2 1, +C4<00000000000000000000000000000011>;
+P_00000147afb02ec8 .param/l "r2" 0 2 1, +C4<00000000000000000000000000000011>;
+v00000147afb314a0_0 .var "clk", 0 0;
+S_00000147afb35cb0 .scope module, "sm_inst" "summator" 2 4, 3 1 0, S_00000147afb288e0;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "clk";
+P_00000147afb35e40 .param/l "r1val" 0 3 1, +C4<00000000000000000000000000000011>;
+P_00000147afb35e78 .param/l "r2val" 0 3 1, +C4<00000000000000000000000000000011>;
+P_00000147afb35eb0 .param/l "reglength" 0 3 1, +C4<00000000000000000000000000000011>;
+v00000147afb30e60_0 .var "carry", 0 0;
+v00000147afb31040_0 .net "carry_wire", 0 0, L_00000147afb31f60;  1 drivers
+v00000147afb30f00_0 .net "clk", 0 0, v00000147afb314a0_0;  1 drivers
+v00000147afb319a0_0 .var "r1", 2 0;
+v00000147afb31400_0 .var "r2", 2 0;
+v00000147afb31220_0 .net "sum_wire", 0 0, L_00000147afb31da0;  1 drivers
+v00000147afb31a40_0 .var "summa", 3 0;
+E_00000147afb24c90 .event posedge, v00000147afb30f00_0;
+L_00000147afb31c20 .part v00000147afb319a0_0, 0, 1;
+L_00000147afb31680 .part v00000147afb31400_0, 0, 1;
+S_00000147afb35ef0 .scope module, "ha" "fullsum" 3 10, 4 1 0, S_00000147afb35cb0;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "A";
+    .port_info 1 /INPUT 1 "B";
+    .port_info 2 /INPUT 1 "iost";
+    .port_info 3 /OUTPUT 1 "sum";
+    .port_info 4 /OUTPUT 1 "oost";
+L_00000147afb32200 .functor XOR 1, L_00000147afb31c20, L_00000147afb31680, C4<0>, C4<0>;
+L_00000147afb31da0 .functor XOR 1, L_00000147afb32200, v00000147afb30e60_0, C4<0>, C4<0>;
+L_00000147afb32190 .functor AND 1, L_00000147afb31c20, L_00000147afb31680, C4<1>, C4<1>;
+L_00000147afb322e0 .functor AND 1, L_00000147afb31680, v00000147afb30e60_0, C4<1>, C4<1>;
+L_00000147afb32350 .functor OR 1, L_00000147afb32190, L_00000147afb322e0, C4<0>, C4<0>;
+L_00000147afb32430 .functor AND 1, L_00000147afb31c20, v00000147afb30e60_0, C4<1>, C4<1>;
+L_00000147afb31f60 .functor OR 1, L_00000147afb32350, L_00000147afb32430, C4<0>, C4<0>;
+v00000147afb02d30_0 .net "A", 0 0, L_00000147afb31c20;  1 drivers
+v00000147afa7eae0_0 .net "B", 0 0, L_00000147afb31680;  1 drivers
+v00000147afb36080_0 .net *"_ivl_0", 0 0, L_00000147afb32200;  1 drivers
+v00000147afb02720_0 .net *"_ivl_10", 0 0, L_00000147afb32430;  1 drivers
+v00000147afb027c0_0 .net *"_ivl_4", 0 0, L_00000147afb32190;  1 drivers
+v00000147afb30dc0_0 .net *"_ivl_6", 0 0, L_00000147afb322e0;  1 drivers
+v00000147afb31720_0 .net *"_ivl_8", 0 0, L_00000147afb32350;  1 drivers
+v00000147afb315e0_0 .net "iost", 0 0, v00000147afb30e60_0;  1 drivers
+v00000147afb31540_0 .net "oost", 0 0, L_00000147afb31f60;  alias, 1 drivers
+v00000147afb317c0_0 .net "sum", 0 0, L_00000147afb31da0;  alias, 1 drivers
+    .scope S_00000147afb35cb0;
+T_0 ;
+    %pushi/vec4 3, 0, 3;
+    %store/vec4 v00000147afb319a0_0, 0, 3;
+    %pushi/vec4 3, 0, 3;
+    %store/vec4 v00000147afb31400_0, 0, 3;
+    %pushi/vec4 0, 0, 4;
+    %store/vec4 v00000147afb31a40_0, 0, 4;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v00000147afb30e60_0, 0, 1;
+    %end;
+    .thread T_0;
+    .scope S_00000147afb35cb0;
+T_1 ;
+    %wait E_00000147afb24c90;
+    %load/vec4 v00000147afb31220_0;
+    %ix/load 4, 0, 0;
+    %flag_set/imm 4, 0;
+    %store/vec4 v00000147afb31a40_0, 4, 1;
+    %load/vec4 v00000147afb31a40_0;
+    %ix/load 4, 1, 0;
+    %flag_set/imm 4, 0;
+    %shiftl 4;
+    %store/vec4 v00000147afb31a40_0, 0, 4;
+    %load/vec4 v00000147afb31040_0;
+    %store/vec4 v00000147afb30e60_0, 0, 1;
+    %load/vec4 v00000147afb319a0_0;
+    %ix/load 4, 1, 0;
+    %flag_set/imm 4, 0;
+    %shiftr 4;
+    %store/vec4 v00000147afb319a0_0, 0, 3;
+    %load/vec4 v00000147afb31400_0;
+    %ix/load 4, 1, 0;
+    %flag_set/imm 4, 0;
+    %shiftr 4;
+    %store/vec4 v00000147afb31400_0, 0, 3;
+    %vpi_call 3 19 "$display", "summa %b", v00000147afb31a40_0 {0 0 0};
+    %jmp T_1;
+    .thread T_1;
+    .scope S_00000147afb288e0;
+T_2 ;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v00000147afb314a0_0, 0, 1;
+    %end;
+    .thread T_2;
+    .scope S_00000147afb288e0;
+T_3 ;
+    %vpi_call 2 8 "$display", "r1: %d\012r2: %d", P_00000147afb02e90, P_00000147afb02ec8 {0 0 0};
+    %delay 8, 0;
+    %vpi_call 2 9 "$finish" {0 0 0};
+    %end;
+    .thread T_3;
+    .scope S_00000147afb288e0;
+T_4 ;
+    %delay 1, 0;
+    %load/vec4 v00000147afb314a0_0;
+    %inv;
+    %store/vec4 v00000147afb314a0_0, 0, 1;
+    %jmp T_4;
+    .thread T_4;
+# The file index is used to find the file name in the following table.
+:file_names 5;
+    "N/A";
+    "<interactive>";
+    "testbench.v";
+    "summator.v";
+    "fullsum.v";
