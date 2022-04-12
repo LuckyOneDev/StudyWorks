@@ -1,4 +1,7 @@
-module fullsum(input wire A, B, input wire iost, output wire sum, oost);
-	assign sum = (A ^ B) ^ iost;
-	assign oost = (A & B) | (B & iost) | (A & iost);
+module fullsum(input wire A, B, clk, output wire sum);
+	reg carry = 0;
+	assign sum = (A ^ B) ^ carry;
+	always @ (posedge clk) begin
+		carry = (A & B) | (B & carry) | (A & carry);
+	end
 endmodule
