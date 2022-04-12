@@ -1,17 +1,18 @@
-module summator #(parameter reglength = 3)(input reg[reglength-1:0] r1, r2, input wire clk, output wire[reglength:0] summa);
-	reg carry = 0;
+module summator #(parameter reglength = 3)(input wire[reglength-1:0] r1, r2, input wire clk, output wire sum);
+	
+	reg init = 1;
+	reg[reglength-1:0] reg1, reg2 = 0;
 
-	wire sum_wire;
-	wire carry_wire;
-	fullsum ha(.A(r1[0]), .B(r2[0]), .sum(sum_wire), .iost(carry), .oost(carry_wire));
+	fullsum s(.A(reg1[0]), .B(reg2[0]), .clk(clk), .sum(sum));
 
-	always @ (posedge clk) 
-	begin
-		summa[0] = sum_wire;
-		summa = summa << 1;
-		carry = carry_wire;
-		r1 = r1 >> 1;
-		r2 = r2 >> 1;
-		$display("summa %b", summa);
+	always @ (posedge clk) begin
+		if (init) begin
+			reg1 <= r1;
+			reg2 <= r2;
+			init <= 0;
+		end
+
+		reg1 = reg1 >> 1;
+		reg2 = reg2 >> 1;
 	end
 endmodule
