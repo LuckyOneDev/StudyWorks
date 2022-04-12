@@ -6,7 +6,6 @@ module summator #(parameter reglength = 3)(input wire[reglength-1:0] r1, r2, inp
 	always @ (reset) begin
 		reg1 = r1;
 		reg2 = r2;
-		accumulator = reg1 + reg2;
 	end
 	
 	always @ (posedge clk) begin
