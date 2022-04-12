@@ -1,8 +1,6 @@
 module SumTB #(parameter reglength = 3);
 	reg clk = 0;
 	
-	reg[reglength:0] i = 0;
-
 	reg[reglength-1:0] reg1 = 0;
 	reg[reglength-1:0] reg2 = 0;
 
