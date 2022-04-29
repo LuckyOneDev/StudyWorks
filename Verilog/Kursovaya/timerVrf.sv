@@ -74,7 +74,7 @@ module timerVrf ();
 			penable <= 1;
 			@(posedge clk);
 
-			while (!pready) @(posedge clk);
+			repeat(3) @(posedge clk);
 			// ACCESS -> IDLE
 			if(exchMode == READ) data <= prdata;
 			err <= pslverr;
@@ -101,40 +101,12 @@ module timerVrf ();
 			penable <= 0;
 			@(posedge clk);
 
-			while (!pready) @(posedge clk);
+		repeat(3) @(posedge clk);
 			// ACCESS -> IDLE
 			if(exchMode == READ) data <= prdata;
 			err <= pslverr;
 			penable <= 0;
 			psel <= 0;
-			@(posedge clk);
-		end
-	endtask
-
-	task exchangeDataXOnPWRITE(
-		input e_rw exchMode,
-		input logic[addrWidth-1:0] deviceAddr,
-		inout logic[dataWidth-1:0] data,
-		output logic err
-	);
-		begin
-			// IDLE -> SETUP
-			paddr <= deviceAddr;
-			psel <= 1;
-			pwrite <= 1'bx; // writing x to pwrite
-			if (exchMode == WRITE) pwdata <= data;
-			@(posedge clk);
-			// SETUP -> ACCESS
-			penable <= 0;
-			@(posedge clk);
-
-			while (!pready) @(posedge clk);
-			// ACCESS -> IDLE
-			if(exchMode == READ) data <= prdata;
-			err <= pslverr;
-			penable <= 0;
-			psel <= 0;
-			pwrite <= 0; // Restore pwrite normal state
 			@(posedge clk);
 		end
 	endtask
@@ -165,13 +137,6 @@ module timerVrf ();
 		// There should be no reaction
 		exchangeDataNoPENABLE(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
 
-//////////////////// w + r with X on pwrite (this cannot happen but whatever) /
-		// Should set pslverr bit
-		exchangeDataXOnPWRITE(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
-		// Should set pslverr bit
-		exchangeDataXOnPWRITE(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-
-
 ///////////////// start a timer and access current counter + state ////////////
 		// get status,
 		// dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
@@ -200,7 +165,9 @@ module timerVrf ();
 		// get status
 		// dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_COMPLETE
 		exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-
+		// get status,
+		// dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
+		exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
 
 ////////////////// pause + read curr 2 times (should be the same) /////////////
 		dataBuf <= 25;
