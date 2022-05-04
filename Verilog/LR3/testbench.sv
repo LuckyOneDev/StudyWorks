@@ -1,7 +1,7 @@
 `define READ 0
 `define WRITE 1
 
-module testbench 
+module testbench
 #(
     parameter word_size = 20,
     parameter word_amount = 30
