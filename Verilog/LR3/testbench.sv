@@ -17,10 +17,12 @@ module testbench
 
 	initial begin
 		// Запись
-		select <= 1;
+		select <= 0;
 		operation <= `WRITE;
 		address <= 2;
 		wdata <= 17;
+		#1
+		select <= 1;
 		#1
 		select <= 0;
 		#1
