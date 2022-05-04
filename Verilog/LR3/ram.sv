@@ -12,13 +12,13 @@ module ram #(
     output logic [word_size] rdata  // прочитанные данные
 );
 
-  reg [word_size * word_amount] memory = 0;
+  reg [word_size:0][word_amount:0] memory = 0;
 
   always @(posedge select) begin
     if (operation == `READ) begin
-      rdata = memory[address+:word_size];
+      rdata = memory[address];
     end else begin
-      memory[address+:word_size] = wdata;
+      memory[address] = wdata;
     end
   end
 
