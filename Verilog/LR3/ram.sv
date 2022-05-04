@@ -5,11 +5,11 @@ module ram #(
     parameter word_size   = 20,
     parameter word_amount = 30
 ) (
-    input logic [$clog2(word_amount)] address,  // адрес обращения
+    input logic [$clog2(word_amount):0] address,  // адрес обращения
     input logic select,  // признак обращения
     input logic operation,  // тип операции (запись/чтение)
-    input logic [word_size] wdata,  // данные для записи
-    output logic [word_size] rdata  // прочитанные данные
+    input logic [word_size:0] wdata,  // данные для записи
+    output logic [word_size:0] rdata  // прочитанные данные
 );
 
   reg [word_size:0][word_amount:0] memory = 0;
