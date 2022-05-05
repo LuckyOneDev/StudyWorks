@@ -26,8 +26,24 @@ module timerVrf ();
   logic pready;
   logic pslverr;
   logic presetn;
+
   logic [dataWidth-1:0] dataBuf;
   logic errBuf;
+
+  timer #(
+      .timerbits(dataWidth)
+  ) timer_inst (
+      .sel(psel),
+      .enable(penable),
+      .reset(presetn),
+      .clk(clk),
+      .write(pwrite),
+      .addr(paddr),
+      .wdata(pwdata),
+      .rdata(prdata),
+      .ready(pready),
+      .slverr(pslverr)
+  );
 
   typedef enum {
     READ,
@@ -56,8 +72,8 @@ module timerVrf ();
     end
   endtask
 
-  task exchangeDataNoPENABLE(input e_rw exchMode, input logic [addrWidth-1:0] deviceAddr,
-                             inout logic [dataWidth-1:0] data, output logic err);
+  task exchangeDataNoPSEL(input e_rw exchMode, input logic [addrWidth-1:0] deviceAddr,
+                          inout logic [dataWidth-1:0] data, output logic err);
     begin
       // IDLE -> SETUP
       paddr  <= deviceAddr;
@@ -79,8 +95,8 @@ module timerVrf ();
     end
   endtask
 
-  task exchangeDataNoPSEL(input e_rw exchMode, input logic [addrWidth-1:0] deviceAddr,
-                          inout logic [dataWidth-1:0] data, output logic err);
+  task exchangeDataNoPENABLE(input e_rw exchMode, input logic [addrWidth-1:0] deviceAddr,
+                             inout logic [dataWidth-1:0] data, output logic err);
     begin
       // IDLE -> SETUP
       paddr  <= deviceAddr;
@@ -101,6 +117,7 @@ module timerVrf ();
       @(posedge clk);
     end
   endtask
+
 
   initial begin
     presetn <= 0;
@@ -152,7 +169,7 @@ module timerVrf ();
     // get status,
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_RUNNING
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-    #10;  // w8 until ctr ends
+    repeat (10) @(posedge clk);  // w8 until ctr ends
     // get status
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_COMPLETE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
