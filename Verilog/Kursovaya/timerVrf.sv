@@ -124,8 +124,6 @@ module timerVrf ();
     #10;
     presetn <= 1;
     @(posedge clk);
-    pslverr <= 0;
-    @(posedge clk);
 
     ///////////////////////	- write + read on wrong addr///////////////////////////
     // There should be no reaction
