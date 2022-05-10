@@ -1,5 +1,5 @@
 module timerVrf ();
-  localparam addrWidth = 2;
+  localparam addrWidth = 32;
   localparam dataWidth = 8;
 
   localparam timerBaseAddr = 0;
@@ -31,7 +31,9 @@ module timerVrf ();
   logic errBuf;
 
   timer #(
-      .timerbits(dataWidth)
+      .timerbits(dataWidth),
+      .addrWidth(addrWidth),
+      .timerBaseAddr(timerBaseAddr)
   ) timer_inst (
       .sel(psel),
       .enable(penable),
@@ -85,39 +87,15 @@ module timerVrf ();
       penable <= 1;
       @(posedge clk);
 
-      repeat (3) @(posedge clk);
+      repeat (2) @(posedge clk);
       // ACCESS -> IDLE
       if (exchMode == READ) data <= prdata;
       err <= pslverr;
       penable <= 0;
       psel <= 0;
-      @(posedge clk);
+      repeat (2) @(posedge clk);
     end
   endtask
-
-  task exchangeDataNoPENABLE(input e_rw exchMode, input logic [addrWidth-1:0] deviceAddr,
-                             inout logic [dataWidth-1:0] data, output logic err);
-    begin
-      // IDLE -> SETUP
-      paddr  <= deviceAddr;
-      psel   <= 1;
-      pwrite <= exchMode;
-      if (exchMode == WRITE) pwdata <= data;
-      @(posedge clk);
-      // SETUP -> ACCESS
-      penable <= 0;
-      @(posedge clk);
-
-      repeat (3) @(posedge clk);
-      // ACCESS -> IDLE
-      if (exchMode == READ) data <= prdata;
-      err <= pslverr;
-      penable <= 0;
-      psel <= 0;
-      @(posedge clk);
-    end
-  endtask
-
 
   initial begin
     presetn <= 0;
@@ -136,12 +114,6 @@ module timerVrf ();
     exchangeDataNoPSEL(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
     // There should be no reaction
     exchangeDataNoPSEL(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-
-    ////////////////////////////////// w + r without enable ///////////////////////
-    // There should be no reaction
-    exchangeDataNoPENABLE(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
-    // There should be no reaction
-    exchangeDataNoPENABLE(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
 
     ///////////////// start a timer and access current counter + state ////////////
     // get status,
