@@ -14,11 +14,16 @@ module timer #(
     clk,
     write,
     input logic [addrWidth-1:0] addr,
-    input logic [timerbits:0] wdata,
-    output logic [timerbits:0] rdata,
+    input logic [timerbits-1:0] wdata,
+    output logic [timerbits-1:0] rdata,
     output logic ready,
     slverr
 );
+
+  localparam CTR_STATUS_START = 0;
+  localparam CTR_STATUS_STOP = 1;
+  localparam CTR_STATUS_STATE = 2;  //bits 2 and 3;
+  localparam CTR_STATE_LEN = 2;
 
   typedef enum logic [CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] {
     CTR_IDLE = 0,
@@ -49,7 +54,7 @@ module timer #(
   always @(posedge clk) begin
     if (is_running && current_value < max_value) current_value++;
 
-    if (addr > timerBaseAddr) begin
+    if (addr >= timerBaseAddr && addr <= timerBaseAddr + addrWidth) begin
       case (apb_state)
         `IDLE: begin
           pready  <= 1;
