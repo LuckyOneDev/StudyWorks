@@ -31,76 +31,101 @@ module timer
   localparam CTR_STATUS_STATE = 2;
   localparam CTR_STATE_LEN = 2;
 
-  typedef enum logic [CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] {
-    CTR_IDLE = 0,
-    CTR_RUNNING = 1,
-    CTR_COMPLETE = 2
-  } e_ctr_state;
-
   logic [1:0] apb_state;
   
-  logic [timerbits:0] current_value;
-  logic [timerbits:0] max_value;
+  logic [timerbits+1:0] current_value;
+  logic [timerbits+1:0] max_value;
 
-  logic [1:0] state_bits;
+  localparam CTR_IDLE = 0;
+  localparam CTR_RUNNING = 1;
+  localparam CTR_COMPLETE = 2;
 
-  e_ctr_state state;
+  logic [3:0] state_bits;
+
+  function write_transition();
+   if (sel && enable) begin
+    case (addr)
+        CTR_STATUS_ADDR: begin
+          state_bits[CTR_STATUS_START] = wdata[0];
+          state_bits[CTR_STATUS_STOP] = wdata[1];
+
+          state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] = CTR_RUNNING;
+        end
+        CTR_GOAL_ADDR: begin
+           max_value = wdata;
+        end
+        CTR_CURR_ADDR: begin
+          slverr = 1;
+          //current_value <= rdata;
+        end
+     endcase
+    end else apb_state = STATE_IDLE;
+endfunction
+
+function read_transition();
+  if (sel && enable) begin
+   case (addr)
+      CTR_STATUS_ADDR: begin
+        rdata = state_bits;
+        if (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_COMPLETE) state_bits = 0;
+      end
+      CTR_GOAL_ADDR: begin
+        rdata = max_value;
+      end
+      CTR_CURR_ADDR: begin
+        rdata = current_value;
+      end
+    endcase
+  end else apb_state = STATE_IDLE;
+endfunction
 
   // Reset is zero positive
   always @(negedge reset) begin
     apb_state <= STATE_IDLE;
+    current_value <= 0;
+    max_value <= 0;
+    state_bits <= 0;
   end
 
   always @(posedge clk) begin
-    if (state_bits[CTR_STATUS_START] && !state_bits[CTR_STATUS_STOP] && (current_value < max_value) ) current_value++;
 
-    if (addr >= timerBaseAddr && addr <= timerBaseAddr + CTR_STATE_LEN) begin
+    if (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && current_value > max_value) begin
+      state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] <= CTR_COMPLETE;
+      state_bits[CTR_STATUS_START] <= 0;
+    end
+
+    if (!state_bits[CTR_STATUS_STOP] && state_bits[CTR_STATUS_START]) current_value++;
+
+    //$display("%b", state_bits);
+
+    if (addr >= timerBaseAddr && addr <= timerBaseAddr + 2) begin
       case (apb_state)
         STATE_IDLE: begin
           rdata  <= 0;
           slverr <= 0;
-          state_bits <= 0;
-        if (sel && !enable) apb_state = STATE_SETUP;
+          ready <= 0;
+        if (sel) apb_state = STATE_SETUP;
         end
         STATE_SETUP: begin
           if (sel && enable) begin
-            ready <= 1;
-            if (write) apb_state = STATE_WRITE;
-            else apb_state = STATE_READ;
+            if (write) begin
+              apb_state = STATE_WRITE;
+              write_transition();
+            end 
+            else begin 
+              apb_state = STATE_READ;
+              read_transition();
+            end
           end
+          ready <= 1;
         end
         // WRITE
         STATE_WRITE: begin
-          if (sel && enable && write) begin
-            case (addr)
-              CTR_STATUS_ADDR: begin
-                state_bits <= rdata;
-              end
-              CTR_GOAL_ADDR: begin
-                max_value <= rdata;
-              end
-              CTR_CURR_ADDR: begin
-                slverr <= 1;
-                //current_value <= rdata;
-              end
-            endcase
-          end else apb_state = STATE_IDLE;
+          write_transition();
         end
         // READ
         STATE_READ: begin
-          if (sel && enable && !write) begin
-            case (addr)
-              CTR_STATUS_ADDR: begin
-                rdata <= state_bits;
-              end
-              CTR_GOAL_ADDR: begin
-                rdata <= max_value;
-              end
-              CTR_CURR_ADDR: begin
-                rdata <= current_value;
-              end
-            endcase
-          end else apb_state = STATE_IDLE;
+          read_transition();
         end
         default: begin
           apb_state = STATE_IDLE;
