@@ -131,7 +131,7 @@ module timerVrf ();
     @(posedge clk);
 
     // starting ctr
-    exchangeData(WRITE, CTR_GOAL_ADDR, dataBuf, errBuf);
+    exchangeData(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
 
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
@@ -159,7 +159,7 @@ module timerVrf ();
     @(posedge clk);
 
     // starting ctr
-    exchangeData(WRITE, CTR_GOAL_ADDR, dataBuf, errBuf);
+    exchangeData(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
 
     dataBuf <= 0;
     @(posedge clk);
@@ -167,7 +167,7 @@ module timerVrf ();
     dataBuf[CTR_STATUS_STOP]  <= 1'b1;
     @(posedge clk);
     // stopping ctr (maybe?)
-    exchangeData(WRITE, CTR_GOAL_ADDR, dataBuf, errBuf);
+    exchangeData(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
 
     // Both accesses should yield the same result
     // accessing current ctr value
