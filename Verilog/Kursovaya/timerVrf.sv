@@ -76,6 +76,29 @@ module timerVrf ();
     end
   endtask
 
+  task exchangeDataNoWait(input e_rw exchMode, input logic [addrWidth-1:0] deviceAddr,
+                          inout logic [dataWidth-1:0] data, output logic err);
+    begin
+      // IDLE -> SETUP
+      paddr  <= deviceAddr;
+      psel   <= 1;
+      pwrite <= exchMode;
+      if (exchMode == WRITE) pwdata <= data;
+      @(posedge clk);
+      // SETUP -> ACCESS
+      penable <= 1;
+      @(posedge clk);
+
+      repeat (2) @(posedge clk);
+      // ACCESS -> IDLE
+      if (exchMode == READ) data <= prdata;
+      err <= pslverr;
+      penable <= 0;
+      psel <= 0;
+      repeat (2) @(posedge clk);
+    end
+  endtask
+
   task exchangeDataNoPSEL(input e_rw exchMode, input logic [addrWidth-1:0] deviceAddr,
                           inout logic [dataWidth-1:0] data, output logic err);
     begin
@@ -115,9 +138,9 @@ module timerVrf ();
 
     ///////////////////////	- write + read on wrong addr///////////////////////////
     // There should be no reaction
-    exchangeData(WRITE, 3, dataBuf, errBuf);
+    exchangeDataNoWait(WRITE, 3, dataBuf, errBuf);
     // There should be no reaction
-    exchangeData(READ, 3, dataBuf, errBuf);
+    exchangeDataNoWait(READ, 3, dataBuf, errBuf);
     $display("dataBuf=%d, is it still zero? %d", dataBuf, dataBuf == 0);
 
     ////////////////////////// write + read without psel //////////////////////////
