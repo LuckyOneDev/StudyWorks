@@ -139,7 +139,7 @@ module timerVrf ();
     // get status,
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_RUNNING
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-    repeat (10) @(posedge clk);  // w8 until ctr ends
+    repeat (20) @(posedge clk);  // w8 until ctr ends
     // get status
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_COMPLETE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
