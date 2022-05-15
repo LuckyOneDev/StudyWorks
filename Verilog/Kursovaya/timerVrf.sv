@@ -30,6 +30,8 @@ module timerVrf ();
   logic [dataWidth-1:0] dataBuf;
   logic errBuf;
 
+  int testBuf;
+
   timer #(
       .timerbits(dataWidth),
       .addrWidth(addrWidth),
@@ -99,6 +101,14 @@ module timerVrf ();
 
   initial begin
     presetn <= 0;
+    pwdata <= 0;
+    pwrite <= 0;
+    dataBuf <= 0;
+    errBuf <= 0;
+    penable <= 0;
+    psel <= 0;
+    paddr <= 0;
+    testBuf = 0;
     #10;
     presetn <= 1;
     @(posedge clk);
@@ -108,17 +118,20 @@ module timerVrf ();
     exchangeData(WRITE, 3, dataBuf, errBuf);
     // There should be no reaction
     exchangeData(READ, 3, dataBuf, errBuf);
+    $display("dataBuf=%d, is it still zero? %d", dataBuf, dataBuf == 0);
 
     ////////////////////////// write + read without psel //////////////////////////
     // There should be no reaction
     exchangeDataNoPSEL(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
     // There should be no reaction
     exchangeDataNoPSEL(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
+    $display("dataBuf=%d, is it still zero? %d", dataBuf, dataBuf == 0);
 
     ///////////////// start a timer and access current counter + state ////////////
     // get status,
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
+    $display("dataBuf=%d, Is it equal to 0b 0000_(00)(0)(0)? %d", dataBuf, dataBuf == 0);
 
     dataBuf <= 25;
     @(posedge clk);
@@ -135,18 +148,27 @@ module timerVrf ();
 
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
+    $display("dataBuf=%d, Is it not equal to 0? %d", dataBuf, dataBuf != 0);
 
     // get status,
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_RUNNING
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
+    $display(
+        "dataBuf=%d, Is it equal to 0b 0000_(01)(0)(1)? %d", dataBuf,
+        dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && dataBuf[CTR_STATUS_START] == 1 && dataBuf[CTR_STATUS_STOP] == 0);
     repeat (20) @(posedge clk);  // w8 until ctr ends
     // get status
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_COMPLETE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
+    $display(
+        "dataBuf=%d, Is it equal to 0b 0000_(10)(0)(0)? %d", dataBuf,
+        dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_COMPLETE && dataBuf[CTR_STATUS_START] == 0 && dataBuf[CTR_STATUS_STOP] == 0);
     // get status,
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-
+    $display(
+        "dataBuf=%d, Is it equal to 0b 0000_(00)(0)(0)? %d", dataBuf,
+        dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_IDLE && dataBuf[CTR_STATUS_START] == 0 && dataBuf[CTR_STATUS_STOP] == 0);
     ////////////////// pause + read curr 2 times (should be the same) /////////////
     dataBuf <= 25;
     @(posedge clk);
@@ -172,8 +194,11 @@ module timerVrf ();
     // Both accesses should yield the same result
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
+    testBuf = dataBuf;
+    $display("dataBuf=%d, Is it not equal to 0? %d", dataBuf, dataBuf != 0);
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
+    $display("dataBuf=%d, Is it the same as in first read? %d", dataBuf, testBuf == dataBuf);
 
 
     $finish();
