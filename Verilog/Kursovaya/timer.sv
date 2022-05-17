@@ -25,35 +25,33 @@ module timer #(
   localparam CTR_CURR_ADDR = timerBaseAddr + 2;
 
   localparam CTR_STATUS_START = 0;
-  localparam CTR_STATUS_STOP = 1;
+  localparam CTR_STATUS_PAUSE = 1;
   localparam CTR_STATUS_STATE = 2;
   localparam CTR_STATE_LEN = 2;
 
   logic [1:0] apb_state;
 
-  logic [timerbits:0] current_value;
-  logic [timerbits:0] max_value;
+  logic [timerbits-1:0] current_value;
+  logic [timerbits-1:0] max_value;
 
-  localparam CTR_IDLE = 0;
-  localparam CTR_RUNNING = 1;
-  localparam CTR_COMPLETE = 2;
+  localparam CTR_IDLE = 2'b00;
+  localparam CTR_RUNNING = 2'b01;
+  localparam CTR_COMPLETE = 2'b10;
 
   logic [3:0] state_bits;
 
-  // Reset is zero positive
-  always @(negedge reset) begin
-    apb_state <= STATE_IDLE;
-    current_value <= 0;
-    max_value <= 0;
-    state_bits <= 0;
-  end
-
   always @(posedge clk) begin
+    if (!reset) begin
+      apb_state <= STATE_IDLE;
+      current_value <= 0;
+      max_value <= 0;
+      state_bits <= 0;
+    end
 
     if (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && current_value == max_value)
       state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] <= CTR_COMPLETE;
-    if (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && !state_bits[CTR_STATUS_STOP])
-      current_value++;
+    if (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && !state_bits[CTR_STATUS_PAUSE])
+      current_value <= current_value + 8'b00000001;
 
     //$display(state_bits);
     if (addr >= timerBaseAddr && addr <= timerBaseAddr + 2) begin
@@ -62,14 +60,14 @@ module timer #(
           rdata  <= 0;
           slverr <= 0;
           ready  <= 0;
-          if (sel) apb_state = STATE_SETUP;
+          if (sel) apb_state <= STATE_SETUP;
         end
         STATE_SETUP: begin
           if (sel && enable) begin
             if (write) begin
-              apb_state = STATE_WRITE;
+              apb_state <= STATE_WRITE;
             end else begin
-              apb_state = STATE_READ;
+              apb_state <= STATE_READ;
             end
           end
         end
@@ -80,7 +78,7 @@ module timer #(
             case (addr)
               CTR_STATUS_ADDR: begin
                 state_bits[CTR_STATUS_START] <= wdata[0];
-                state_bits[CTR_STATUS_STOP]  <= wdata[1];
+                state_bits[CTR_STATUS_PAUSE] <= wdata[1];
                 if (wdata[CTR_STATUS_START] == 1)
                   state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] <= CTR_RUNNING;
                 else begin
@@ -96,7 +94,7 @@ module timer #(
                 //current_value <= rdata;
               end
             endcase
-          end else apb_state = STATE_IDLE;
+          end else apb_state <= STATE_IDLE;
         end
         // READ
         STATE_READ: begin
@@ -113,10 +111,10 @@ module timer #(
                 rdata <= current_value;
               end
             endcase
-          end else apb_state = STATE_IDLE;
+          end else apb_state <= STATE_IDLE;
         end
         default: begin
-          apb_state = STATE_IDLE;
+          apb_state <= STATE_IDLE;
         end
       endcase
     end
