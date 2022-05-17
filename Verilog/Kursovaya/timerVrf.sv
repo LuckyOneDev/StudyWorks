@@ -184,14 +184,9 @@ module timerVrf ();
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_COMPLETE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
     $display(
-        "dataBuf=%d, Is it equal to 0b 0000_(10)(0)(0)? %d", dataBuf,
-        dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_COMPLETE && dataBuf[CTR_STATUS_START] == 0 && dataBuf[CTR_STATUS_STOP] == 0);
-    // get status,
-    // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
-    exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-    $display(
-        "dataBuf=%d, Is it equal to 0b 0000_(00)(0)(0)? %d", dataBuf,
-        dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_IDLE && dataBuf[CTR_STATUS_START] == 0 && dataBuf[CTR_STATUS_STOP] == 0);
+        "dataBuf=%d, Is it equal to 0b 0000_(10)(0)(1)? %d", dataBuf,
+        dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_COMPLETE && dataBuf[CTR_STATUS_START] == 1 && dataBuf[CTR_STATUS_STOP] == 0);
+
     ////////////////// pause + read curr 2 times (should be the same) /////////////
     dataBuf <= 100;
     @(posedge clk);
@@ -222,7 +217,12 @@ module timerVrf ();
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
     $display("dataBuf=%d, Is it the same as in first read? %d", dataBuf, testBuf == dataBuf);
-
+    // get status,
+    // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
+    exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
+    $display(
+        "dataBuf=%d, Is it equal to 0b 0000_(01)(1)(1)? %d", dataBuf,
+        dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && dataBuf[CTR_STATUS_START] == 1 && dataBuf[CTR_STATUS_STOP] == 1);
 
     $finish();
   end
