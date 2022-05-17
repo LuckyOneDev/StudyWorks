@@ -141,20 +141,20 @@ module timerVrf ();
     exchangeDataNoWait(WRITE, 3, dataBuf, errBuf);
     // There should be no reaction
     exchangeDataNoWait(READ, 3, dataBuf, errBuf);
-    $display("dataBuf=%d, is it still zero? %d", dataBuf, dataBuf == 0);
+    $display("Wrong address write + read. No reaction? %d", dataBuf == 0);
 
     ////////////////////////// write + read without psel //////////////////////////
     // There should be no reaction
     exchangeDataNoPSEL(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
     // There should be no reaction
     exchangeDataNoPSEL(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-    $display("dataBuf=%d, is it still zero? %d", dataBuf, dataBuf == 0);
+    $display("Operations without psel. No reaction? %d", dataBuf == 0);
 
     ///////////////// start a timer and access current counter + state ////////////
     // get status,
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
-    $display("dataBuf=%d, Is it equal to 0b 0000_(00)(0)(0)? %d", dataBuf, dataBuf == 0);
+    $display("Getting status register. Is it equal to 0b 0000_(00)(0)(0)? %d", dataBuf == 0);
 
     dataBuf <= 25;
     @(posedge clk);
@@ -171,20 +171,20 @@ module timerVrf ();
 
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
-    $display("dataBuf=%d, Is it not equal to 0? %d", dataBuf, dataBuf != 0);
+    $display("Getting current counter value. Is it not equal to 0? %d", dataBuf != 0);
 
     // get status,
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_RUNNING
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
     $display(
-        "dataBuf=%d, Is it equal to 0b 0000_(01)(0)(1)? %d", dataBuf,
+        "Getting status. Is it RUNNING (equal to 0b 0000_(01)(0)(1))? %d",
         dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && dataBuf[CTR_STATUS_START] == 1 && dataBuf[CTR_STATUS_STOP] == 0);
     repeat (20) @(posedge clk);  // w8 until ctr ends
     // get status
     // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_COMPLETE
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
     $display(
-        "dataBuf=%d, Is it equal to 0b 0000_(10)(0)(1)? %d", dataBuf,
+        "Getting status. Is it COMPLETE (equal to 0b 0000_(10)(0)(1))? %d",
         dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_COMPLETE && dataBuf[CTR_STATUS_START] == 1 && dataBuf[CTR_STATUS_STOP] == 0);
 
     ////////////////// pause + read curr 2 times (should be the same) /////////////
@@ -222,15 +222,16 @@ module timerVrf ();
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
     testBuf = dataBuf;
-    $display("dataBuf=%d, Is it not equal to 0? %d", dataBuf, dataBuf != 0);
+    $display("Getting current counter value. Is it not equal to 0? %d", dataBuf != 0);
     // accessing current ctr value
     exchangeData(READ, CTR_CURR_ADDR, dataBuf, errBuf);
-    $display("dataBuf=%d, Is it the same as in first read? %d", dataBuf, testBuf == dataBuf);
+    $display("Getting current counter value again. Is it the same as in first read? %d",
+             testBuf == dataBuf);
     // get status,
-    // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_IDLE
+    // dataBuf[CTR_STATUS_STATE+CTR_STATE_LEN-1:CTR_STATUS_STATE] == CTR_RUNNING
     exchangeData(READ, CTR_STATUS_ADDR, dataBuf, errBuf);
     $display(
-        "dataBuf=%d, Is it equal to 0b 0000_(01)(1)(1)? %d", dataBuf,
+        "Getting status. Is it RUNNING (equal to 0b 0000_(01)(1)(1))? %d",
         dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && dataBuf[CTR_STATUS_START] == 1 && dataBuf[CTR_STATUS_STOP] == 1);
 
     $finish();

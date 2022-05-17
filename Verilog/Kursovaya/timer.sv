@@ -48,21 +48,10 @@ module timer #(
       state_bits <= 0;
     end
 
-    case (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN])
-      CTR_IDLE: begin
-
-      end
-      CTR_RUNNING: begin
-        if (current_value == max_value) state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] <= CTR_COMPLETE;
-        if (!state_bits[CTR_STATUS_PAUSE]) current_value <= current_value + 8'b00000001;
-      end
-      CTR_COMPLETE: begin
-
-      end
-      default: begin
-        state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] <= CTR_IDLE;
-      end
-    endcase
+    if (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && current_value == max_value)
+      state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] <= CTR_COMPLETE;
+    if (state_bits[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_RUNNING && !state_bits[CTR_STATUS_PAUSE])
+      current_value <= current_value + 8'b00000001;
 
     //$display(state_bits);
     if (addr >= timerBaseAddr && addr <= timerBaseAddr + 2) begin
