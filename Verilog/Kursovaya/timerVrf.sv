@@ -193,7 +193,7 @@ module timerVrf ();
         "dataBuf=%d, Is it equal to 0b 0000_(00)(0)(0)? %d", dataBuf,
         dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_IDLE && dataBuf[CTR_STATUS_START] == 0 && dataBuf[CTR_STATUS_STOP] == 0);
     ////////////////// pause + read curr 2 times (should be the same) /////////////
-    dataBuf <= 25;
+    dataBuf <= 100;
     @(posedge clk);
     // Setting ctr to 20 ticks
     exchangeData(WRITE, CTR_GOAL_ADDR, dataBuf, errBuf);
