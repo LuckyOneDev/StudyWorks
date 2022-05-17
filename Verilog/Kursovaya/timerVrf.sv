@@ -188,9 +188,18 @@ module timerVrf ();
         dataBuf[CTR_STATUS_STATE+:CTR_STATE_LEN] == CTR_COMPLETE && dataBuf[CTR_STATUS_START] == 1 && dataBuf[CTR_STATUS_STOP] == 0);
 
     ////////////////// pause + read curr 2 times (should be the same) /////////////
+    // resetting ctr
+    dataBuf <= 0;
+    @(posedge clk);
+    dataBuf[CTR_STATUS_START] <= 1'b0;
+    @(posedge clk);
+
+    // starting ctr
+    exchangeData(WRITE, CTR_STATUS_ADDR, dataBuf, errBuf);
+
     dataBuf <= 100;
     @(posedge clk);
-    // Setting ctr to 20 ticks
+    // Setting ctr to 100 ticks
     exchangeData(WRITE, CTR_GOAL_ADDR, dataBuf, errBuf);
 
     dataBuf <= 0;
